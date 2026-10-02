@@ -1,0 +1,683 @@
+@{
+    ViewData["title"] = "Register page";
+}
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #0f766e, #065f46);
+    }
+
+    /* CARD */
+    /* Wrapper */
+    .dropdown-group {
+        display: flex;
+        align-items: center;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 6px 12px;
+        background: #ffffff;
+        height: 42px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Focus Effect */
+    .dropdown-group:focus-within {
+        border-color: #0f766e;
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+    }
+
+    /* Icon Style */
+    .dropdown-group .k-icon {
+        margin-right: 8px;
+        color: #6b7280;
+        font-size: 18px;
+    }
+
+    /* Kendo Dropdown Remove Default Border */
+    .dropdown-group .k-picker {
+        border: none !important;
+        box-shadow: none !important;
+        width: 100%;
+        background: transparent;
+    }
+
+    /* Input Text */
+    .dropdown-group .k-input {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 15px;
+        color: #111827;
+    }
+
+    /* Dropdown Arrow */
+    .dropdown-group .k-button-icon {
+        color: #6b7280;
+    }
+
+    /* Hover */
+    .dropdown-group:hover {
+        border-color: #14b8a6;
+    }
+
+    /* Dropdown Popup */
+    .k-list-container {
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Dropdown Items */
+    .k-list .k-item {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    /* Hover Item */
+    .k-list .k-item:hover {
+        background: #f0fdfa;
+    }
+
+    /* Selected Item */
+    .k-list .k-item.k-selected {
+        background: #0f766e;
+        color: white;
+    }
+
+    /* Dropdown List Popup */
+    .k-list-container {
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Dropdown Items */
+    .k-list .k-item {
+        padding: 10px 14px;
+        font-size: 14px;
+        transition: background 0.2s ease;
+    }
+
+    /* Hover Item */
+    .k-list .k-item:hover {
+        background: #f0fdfa;
+    }
+
+    /* Selected Item */
+    .k-list .k-item.k-selected {
+        background: #0f766e;
+        color: #ffffff;
+    }
+
+    /* Input Group Wrapper */
+    .input-group {
+        display: flex;
+        align-items: center;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 8px 12px;
+        background: #ffffff;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Focus Effect */
+    .input-group:focus-within {
+        border-color: #0f766e;
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+    }
+
+    /* Kendo Icon Styling */
+    .input-group .k-icon {
+        margin-right: 10px;
+        font-size: 18px;
+        color: #6b7280;
+    }
+
+    /* Textbox Styling */
+    .input-group input.k-textbox {
+        border: none;
+        outline: none;
+        flex: 1;
+        font-size: 15px;
+        font-family: 'Segoe UI', sans-serif;
+        color: #111827;
+        background: transparent;
+    }
+
+    /* Placeholder Styling */
+    .input-group input::placeholder {
+        color: #9ca3af;
+        font-size: 14px;
+    }
+
+    /* Hover Effect */
+    .input-group:hover {
+        border-color: #14b8a6;
+    }
+
+    .register-container {
+        width: 700px;
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 28px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    /* BRAND */
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .brand-icon {
+        width: 50px;
+        height: 50px;
+        background: #0f766e;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 22px;
+    }
+
+    .brand-text {
+        font-size: 22px;
+        font-weight: 700;
+        color: #0f766e;
+    }
+
+    .title {
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .subtitle {
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+    /* INPUT */
+
+    .gender-group {
+        display: flex;
+        gap: 12px;
+    }
+
+    .gender-group label {
+        flex: 1;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .gender-group input {
+        display: none;
+    }
+
+    .gender-group label:hover {
+        border-color: #14b8a6;
+        background: #f0fdfa;
+    }
+
+    .gender-group input:checked+span {
+        color: white;
+    }
+
+    .gender-group label:has(input:checked) {
+        background: #0f766e;
+        color: white;
+        border-color: #0f766e;
+    }
+
+    /* Error Message */
+    .k-invalid-msg {
+        color: #ef4444;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    /* Invalid Border */
+    .k-invalid .gender-group label {
+        border-color: #ef4444;
+    }
+
+    /* PASSWORD RULES */
+
+    .password-rules {
+        font-size: 12px;
+        color: #777;
+        margin-top: 5px;
+    }
+
+    /* BUTTON */
+
+    .k-button {
+        width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+        background: #0f766e;
+        color: white;
+        font-weight: 600;
+        border: none;
+    }
+
+    .k-button:hover {
+        background: #0c5f58;
+    }
+
+    /* LINKS */
+
+    .links {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .links a {
+        color: #0f766e;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    /* Upload Wrapper */
+    .upload-group {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        background: #ffffff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    /* Hover Effect */
+    .upload-group:hover {
+        border-color: #14b8a6;
+        background: #f0fdfa;
+    }
+
+    /* Upload Icon */
+    .upload-group .upload-icon {
+        font-size: 30px;
+        color: #0f766e;
+        margin-bottom: 8px;
+    }
+
+    /* Upload Text */
+    .upload-group .upload-text {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 10px;
+    }
+
+    /* Kendo Upload Button */
+    .k-upload-button {
+        border-radius: 8px !important;
+        background: #0f766e !important;
+        color: white !important;
+        border: none !important;
+        padding: 6px 14px !important;
+        font-size: 14px;
+    }
+
+    /* Hover Button */
+    .k-upload-button:hover {
+        background: #115e59 !important;
+    }
+
+    /* Uploaded File */
+    .k-upload-files {
+        margin-top: 10px;
+    }
+
+    /* File Item */
+    .k-file {
+        border-radius: 8px;
+        padding: 8px;
+        background: #f9fafb;
+    }
+</style>
+
+
+<div class="register-container">
+
+    <div class="brand">
+        <div class="brand-icon">🏥</div>
+        <div>
+            <div class="brand-text">MediCare</div>
+            <small>NEW PATIENT REGISTRATION</small>
+        </div>
+    </div>
+
+    <div class="title">Create Account</div>
+    <div class="subtitle">Register to book appointments at MediCare Clinic</div>
+
+    <form asp-action="Register" method="post" enctype="multipart/form-data">
+        <div id="registerForm"></div>
+
+        <div class="links">
+            Already registered? <a href="/Auth/Login">Sign in</a>
+        </div>
+    </form>
+
+
+</div>
+
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+
+            var form = $("#registerForm").kendoForm({
+
+                orientation: "vertical",
+
+                formData: {
+                    c_Name: "",
+                    c_Mobile: "",
+                    c_Email: "",
+                    c_Password: "",
+                    c_Gender: "",
+                    c_StateId: "",
+                    c_CityId: "",
+                },
+
+                items: [
+
+                    {
+                        field: "c_Name",
+                        label: "Full Name",
+                        editor: function (container, options) {
+
+                            $('<div class="input-group">\
+                            <i class="k-icon k-i-user"></i>\
+                            <input name="' + options.field + '" class="k-textbox" placeholder="John Smith"/>\
+                        </div>\
+                        <span class="k-invalid-msg" data-for="' + options.field + '"></span>')
+                                .appendTo(container);
+
+                        }
+                    },
+
+                    {
+                        field: "c_Mobile",
+                        label: "Mobile Number",
+                        editor: function (container, options) {
+
+                            $('<div class="input-group">\
+                            <i class="k-icon k-i-rss"></i>\
+                            <input name="' + options.field + '" class="k-textbox" placeholder="9876543210"/>\
+                        </div>\
+                        <span class="k-invalid-msg" data-for="' + options.field + '"></span>')
+                                .appendTo(container);
+
+                        }
+                    },
+
+                    {
+                        field: "c_Email",
+                        label: "Email Address",
+                        editor: function (container, options) {
+
+                            $('<div class="input-group">\
+                            <i class="k-icon k-i-email"></i>\
+                            <input name="' + options.field + '" class="k-textbox" placeholder="your@email.com"/>\
+                        </div>\
+                        <span class="k-invalid-msg" data-for="' + options.field + '"></span>')
+                                .appendTo(container);
+
+                        }
+                    },
+
+                    {
+                        field: "c_Password",
+                        label: "Password",
+                        editor: function (container, options) {
+
+                            $('<div class="input-group">\
+                            <i class="k-icon k-i-lock"></i>\
+                            <input type="password" name="' + options.field + '" class="k-textbox" placeholder="Strong password"/>\
+                        </div>\
+                        <div class="password-rules">\
+                        • Minimum 8 characters • Uppercase • Number • Special character\
+                        </div>\
+                        <span class="k-invalid-msg" data-for="' + options.field + '"></span>')
+                                .appendTo(container);
+
+                        }
+                    },
+
+                    {
+                        field: "c_Gender",
+                        label: "Gender",
+                        editor: function (container, options) {
+
+                            $('<div class="gender-group">\
+                            <label><input type="radio" name="' + options.field + '" value="Male"/><span>Male</span></label>\
+                            <label><input type="radio" name="' + options.field + '" value="Female"/><span>Female</span></label>\
+                            <label><input type="radio" name="' + options.field + '" value="Other"/><span>Other</span></label>\
+                            </div>\
+                            <span class="k-invalid-msg" data-for="' + options.field + '"></span>')
+                                .appendTo(container);
+
+                        }
+                    },
+
+                    {
+                        field: "c_StateId",
+                        label: "State",
+                        editor: function (container, options) {
+
+                            $('<div class="dropdown-group">\
+                            <i class="k-icon k-i-globe"></i>\
+                            <input id="c_StateId" name="' + options.field + '"/>\
+                        </div>\
+                        <span class="k-invalid-msg" data-for="' + options.field + '"></span>')
+                                .appendTo(container);
+
+                            $("#c_StateId").kendoDropDownList({
+
+                                optionLabel: "-- Select State --",
+                                dataTextField: "c_StateName",
+                                dataValueField: "c_StateId",
+
+                                dataSource: {
+                                    transport: {
+                                        read: {
+                                            url: "/Auth/getAllState",
+                                            dataType: "json"
+                                        }
+                                    }
+                                },
+
+                                change: function () {
+
+                                    var stateId = this.value();
+                                    var city = $("#c_CityId").data("kendoDropDownList");
+
+                                    if (city) {
+                                        city.dataSource.read({ stateId: stateId });
+                                    }
+
+                                }
+
+                            });
+
+                        }
+                    },
+
+                    {
+                        field: "c_CityId",
+                        label: "City",
+                        editor: function (container, options) {
+
+                            $('<div class="dropdown-group">\
+                            <i class="k-icon k-i-marker-pin"></i>\
+                            <input id="c_CityId" name="' + options.field + '"/>\
+                        </div>\
+                        <span class="k-invalid-msg" data-for="' + options.field + '"></span>')
+                                .appendTo(container);
+
+                            $("#c_CityId").kendoDropDownList({
+
+                                optionLabel: "-- Select State First --",
+                                dataTextField: "c_CityName",
+                                dataValueField: "c_CityId",
+                                autoBind: false,
+
+                                dataSource: {
+                                    transport: {
+                                        read: {
+                                            url: "/Auth/GetCities",
+                                            dataType: "json",
+                                            data: function () {
+
+                                                var state = $("#c_StateId").data("kendoDropDownList");
+
+                                                return {
+                                                    stateId: state ? state.value() : 0
+                                                };
+
+                                            }
+                                        }
+                                    }
+                                }
+
+                            });
+
+                        }
+                    },
+                    {
+                        field: "c_ImageFile",
+                        label: "Profile Image",
+                        editor: function (container, options) {
+
+                            $('<div class="dropdown-group">\
+                <i class="k-icon k-i-image"></i>\
+                <input type="file" name="'+ options.field + '" id="c_ImageFile" accept="image/*"/>\
+            </div>\
+            <span class="k-invalid-msg" data-for="'+ options.field + '"></span>')
+                                .appendTo(container);
+
+                        }
+                    }
+
+                ],
+
+                buttonsTemplate:
+                    '<button type="submit" class="k-button">Create Patient Account →</button>'
+
+            }).data("kendoForm");
+
+
+            /* VALIDATOR */
+
+            var validator = $("form").kendoValidator({
+
+                rules: {
+
+                    nameRequired: function (input) {
+                        if (input.is("[name='c_Name']")) {
+                            return input.val().trim() !== "";
+                        }
+                        return true;
+                    },
+
+                    mobileValidation: function (input) {
+                        if (input.is("[name='c_Mobile']")) {
+                            var pattern = /^[6-9]\d{9}$/;
+                            return pattern.test(input.val());
+                        }
+                        return true;
+                    },
+
+                    emailValidation: function (input) {
+                        if (input.is("[name='c_Email']")) {
+                            var pattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                            return pattern.test(input.val());
+                        }
+                        return true;
+                    },
+
+                    passwordValidation: function (input) {
+                        if (input.is("[name='c_Password']")) {
+
+                            var pattern =
+                                /^(?=.*[A-Z])(?=.*\d)(?=.*[@@$!%*?&]).{8,}$/;
+
+                            return pattern.test(input.val());
+                        }
+                        return true;
+                    },
+
+                    genderRequired: function (input) {
+
+                        if (input.attr("name") === "c_Gender") {
+                            return $("input[name='c_Gender']:checked").length > 0;
+                        }
+
+                        return true;
+                    },
+
+                    stateRequired: function (input) {
+
+                        if (input.attr("name") === "c_StateId") {
+
+                            var state = $("#c_StateId").data("kendoDropDownList");
+
+                            return state && state.value() !== "";
+                        }
+
+                        return true;
+                    },
+
+                    cityRequired: function (input) {
+
+                        if (input.attr("name") === "c_CityId") {
+
+                            var city = $("#c_CityId").data("kendoDropDownList");
+
+                            return city && city.value() !== "";
+                        }
+
+                        return true;
+                    }
+
+                },
+
+                messages: {
+
+                    nameRequired: "Full name is required",
+                    mobileValidation: "Enter valid 10 digit mobile number",
+                    emailValidation: "Enter valid email address",
+
+                    passwordValidation:
+                        "Password must contain uppercase, number and special character",
+
+                    genderRequired: "Please select gender",
+                    stateRequired: "Please select state",
+                    cityRequired: "Please select city"
+                }
+
+            }).data("kendoValidator");
+
+
+            $("form").on("submit", function (e) {
+
+                if (!validator.validate()) {
+                    e.preventDefault();
+                }
+
+            });
+
+        });
+
+    </script>
+}

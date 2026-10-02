@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MediCare</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- FullCalendar -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css" />
+
+    <!-- Kendo UI CSS (Official CDN) -->
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.1.119/styles/kendo.default-v2.min.css" />
+
+    <!-- Kendo Notification Styles -->
+    <style>
+                        .k-notification {
+                            font-size: 14px;
+                        }
+
+                        .notification-success {
+                            background-color: #10b981 !important;
+                            color: #fff !important;
+                            border: none !important;
+                        }
+
+                        .notification-info {
+                            background-color: #3b82f6 !important;
+                            color: #fff !important;
+                            border: none !important;
+                        }
+    </style>
+
+</head>
+
+<body class="admin-body">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+
+        <div class="logo-box">
+            <div class="logo-icon">🏥</div>
+            <span class="logo-text">MediCare</span>
+        </div>
+
+        <!-- NAVIGATION -->
+        <nav class="admin-nav">
+
+            <a asp-controller="Admin" asp-action="Dashboard"
+                   class="admin-nav__link @(Context.Request.Path.Value?.Contains("/Admin/Dashboard") == true ? "is-active" : "")">
+                📊 Dashboard
+            </a>
+
+            <a asp-controller="Admin" asp-action="AllAppointments"
+                   class="admin-nav__link @(Context.Request.Path.Value?.Contains("/Admin/AllAppointments") == true ? "is-active" : "")">
+                📅 All Appointments
+            </a>
+
+            <a asp-controller="Admin" asp-action="AllPatients"
+                   class="admin-nav__link @(Context.Request.Path.Value?.Contains("/Admin/AllPatients") == true ? "is-active" : "")">
+                👥 All Patients
+            </a>
+
+        </nav>
+
+        <!-- USER PROFILE -->
+        <div class="admin-user-profile">
+            <span class="admin-user-profile__name">Admin</span>
+            <div class="admin-user-profile__dp">A</div>
+            <button id="signOutBtn" class="k-button k-button-md k-rounded-md k-button-solid-primary">Sign Out</button>
+        </div>
+
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-container">
+        @RenderBody()
+    </main>
+
+    <!-- Kendo Notification Container -->
+    <div id="notificationContainer"></div>
+
+
+    <!-- ================= SCRIPTS ================= -->
+
+    <!-- jQuery (Required for Kendo) -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <!-- Sign Out Button Script -->
+    <script>
+            $(document).ready(function () {
+                $("#signOutBtn").click(function () {
+                    window.location.href = '@Url.Action("Logout", "Auth")';
+                });
+            });
+    </script>
+
+    <!-- FullCalendar -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+    <!-- Kendo UI JS -->
+    <script src="https://kendo.cdn.telerik.com/2022.1.119/js/kendo.all.min.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Site JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Global Notification System -->
+    <script>
+        // Global notification handler
+        var kendoNotification;
+
+        $(document).ready(function () {
+        // Initialize Kendo Notification
+        if (typeof kendo !== "undefined") {
+        $("#notificationContainer").kendoNotification({
+        stacking: "down",
+        button: true,
+        autoHideAfter: 5000,
+        width: "300px",
+        position: {
+        pinned: true,
+        top: 20,
+        right: 20
+        }
+        });
+        kendoNotification = $("#notificationContainer").data("kendoNotification");
+        console.log("Kendo Notification initialized successfully");
+        } else {
+        console.warn("Kendo not available for notifications");
+        }
+        });
+
+        // Global function to show notifications
+        function showNotification(message, type) {
+        if (kendoNotification) {
+        var notificationType = type === "success" ? "notification-success" : "notification-info";
+        kendoNotification.show({
+        message: message
+        }, notificationType);
+        } else {
+        // Fallback to alert if Kendo not available
+        alert(message);
+        }
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>

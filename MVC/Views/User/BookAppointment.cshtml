@@ -1,0 +1,412 @@
+@* @{
+    ViewData["Title"] = "Book Appointment";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+@* <style>
+    .page-title {
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    .subtitle {
+        color: #777;
+        margin-bottom: 20px;
+    }
+
+    .step-card {
+        background: #f7fbfb;
+        border: 1px solid #d0e8e5;
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .dept-grid {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .dept-card {
+        flex: 1;
+        min-width: 130px;
+        text-align: center;
+        padding: 20px;
+        border-radius: 12px;
+        border: 2px solid #c9e2df;
+        background: white;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .dept-card:hover {
+        border-color: #0a7a6a;
+        background: #eef8f7;
+    }
+
+    .dept-card.selected {
+        border-color: #0a7a6a;
+        background: #e2f4f2;
+    }
+
+    .dept-icon {
+        font-size: 30px;
+        margin-bottom: 8px;
+    }
+
+    .slotBtn {
+        margin: 6px;
+    }
+
+    .k-button.k-primary {
+        background: #0a7a6a;
+        border-color: #0a7a6a;
+    }
+</style> 
+
+<div class="container mt-4">
+
+
+    <div id="notification"></div>
+    <h2 class="page-title">Book Appointment</h2>
+    <p class="subtitle">Select department, date and time slot</p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="step-card">
+                <h6>Step 1 — Select Department</h6>
+                <div id="deptGrid" class="dept-grid"></div>
+            </div>
+
+            <div class="step-card">
+                <h6>Step 2 — Select Date</h6>
+                <input id="appointmentDate" style="width:100%" />
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="step-card">
+                <h6>Step 3 — Available Time Slots</h6>
+                <div id="slotContainer"></div>
+                
+                <br />
+                
+                <button id="confirmBtn" class="k-button k-primary" style="display:none">
+                    Confirm Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var selectedDept = null;
+        var selectedSlot = null;
+        var notification;   // ✅ GLOBAL
+
+        var departments = @Html.Raw(ViewBag.DepartmentsJson);
+
+        var allSlots = [
+            "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM",
+            "11:00 AM", "11:30 AM", "01:00 PM", "01:30 PM",
+            "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM",
+            "04:00 PM", "04:30 PM", "05:00 PM"
+        ];
+
+        var deptIcons = {
+            1: "🩺",
+            2: "👶",
+            3: "🦴"
+        };
+
+        $(document).ready(function () {
+
+            // Render Departments
+            var html = "";
+
+            departments.forEach(function (d) {
+                var icon = deptIcons[d.c_DepartmentId] || "🏥";
+
+                html += `
+                    <div class="dept-card" data-id="${d.c_DepartmentId}">
+                        <div class="dept-icon">${icon}</div>
+                        <h6>${d.c_DepartmentName}</h6>
+                    </div>
+                `;
+            });
+
+            $("#deptGrid").html(html);
+
+            // DatePicker
+            $("#appointmentDate").kendoDatePicker({
+                format: "dd-MM-yyyy",
+                min: new Date(),
+                change: loadSlots
+            });
+
+            // Kendo Notification
+            notification = $("#notification").kendoNotification({
+                position: {
+                    pinned: true,
+                    top: 60,
+                    right: 30
+                },
+                autoHideAfter: 3000,
+                stacking: "down"
+            }).data("kendoNotification");
+
+        });
+
+        // Department select
+        $(document).on("click", ".dept-card", function () {
+            $(".dept-card").removeClass("selected");
+            $(this).addClass("selected");
+
+            selectedDept = $(this).data("id");
+            loadSlots();
+        });
+
+        // Load slots
+        function loadSlots() {
+            var date = $("#appointmentDate").data("kendoDatePicker").value();
+
+            if (!selectedDept || !date) return;
+
+            var dateStr = kendo.toString(date, "yyyy-MM-dd");
+
+            $("#slotContainer").html("Loading slots...");
+
+            $.getJSON("/User/GetBookedSlots", {
+                departmentId: selectedDept,
+                date: dateStr
+            }, function (bookedSlots) {
+                var html = "";
+
+                allSlots.forEach(function (slot) {
+                    var booked = bookedSlots.includes(slot);
+
+                    html += `
+                        <button class="k-button slotBtn ${booked ? 'k-state-disabled' : ''}" data-time="${slot}">
+                            ${slot}
+                        </button>
+                    `;
+                });
+
+                $("#slotContainer").html(html);
+            });
+        }
+
+        // Slot select
+        $(document).on("click", ".slotBtn:not(.k-state-disabled)", function () {
+            $(".slotBtn").removeClass("k-primary");
+            $(this).addClass("k-primary");
+
+            selectedSlot = $(this).data("time");
+            $("#confirmBtn").show();
+        });
+
+        // Confirm appointment
+        $("#confirmBtn").click(function () {
+            var date = $("#appointmentDate").data("kendoDatePicker").value();
+
+            $.ajax({
+                url: '/User/BookAppointment',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    c_DepartmentId: selectedDept,
+                    c_Date: kendo.toString(date, "yyyy-MM-dd"),
+                    c_Time: selectedSlot
+                }),
+                success: function (res) {
+                    if (res.success) {
+                        notification.show("Appointment booked successfully", "success");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        notification.show(res.message, "error");
+                    }
+                }
+            });
+        });
+    </script>
+} *@
+
+
+@{
+    ViewData["Title"] = "Book Appointment";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="container mt-4">
+
+
+    <div id="notification"></div>
+    <h2 class="page-title">Book Appointment</h2>
+    <p class="subtitle">Select department, date and time slot</p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="step-card">
+                <h6>Step 1 — Select Department</h6>
+                <div id="deptGrid" class="dept-grid"></div>
+            </div>
+
+            <div class="step-card">
+                <h6>Step 2 — Select Date</h6>
+                <input id="appointmentDate" style="width:100%" />
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="step-card">
+                <h6>Step 3 — Available Time Slots</h6>
+                <div id="slotContainer"></div>
+                
+                <br />
+                
+                <button id="confirmBtn" class="k-button k-primary" style="display:none">
+                    Confirm Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var selectedDept = null;
+        var selectedSlot = null;
+        var notification;   // ✅ GLOBAL
+
+        var departments = @Html.Raw(ViewBag.DepartmentsJson);
+
+        var allSlots = [
+            "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM",
+            "11:00 AM", "11:30 AM", "01:00 PM", "01:30 PM",
+            "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM",
+            "04:00 PM", "04:30 PM", "05:00 PM"
+        ];
+
+        var deptIcons = {
+            1: "🩺",
+            2: "👶",
+            3: "🦴"
+        };
+
+        $(document).ready(function () {
+
+            // Render Departments
+            var html = "";
+
+            departments.forEach(function (d) {
+                var icon = deptIcons[d.c_DepartmentId] || "🏥";
+
+                html += `
+                    <div class="dept-card" data-id="${d.c_DepartmentId}">
+                        <div class="dept-icon">${icon}</div>
+                        <h6>${d.c_DepartmentName}</h6>
+                    </div>
+                `;
+            });
+
+            $("#deptGrid").html(html);
+
+            // DatePicker
+            $("#appointmentDate").kendoDatePicker({
+                format: "dd-MM-yyyy",
+                min: new Date(),
+                change: loadSlots
+            });
+
+            // Kendo Notification
+            notification = $("#notification").kendoNotification({
+                position: {
+                    pinned: true,
+                    top: 60,
+                    right: 30
+                },
+                autoHideAfter: 3000,
+                stacking: "down"
+            }).data("kendoNotification");
+
+        });
+
+        // Department select
+        $(document).on("click", ".dept-card", function () {
+            $(".dept-card").removeClass("selected");
+            $(this).addClass("selected");
+
+            selectedDept = $(this).data("id");
+            loadSlots();
+        });
+
+        // Load slots
+        function loadSlots() {
+            var date = $("#appointmentDate").data("kendoDatePicker").value();
+
+            if (!selectedDept || !date) return;
+
+            var dateStr = kendo.toString(date, "yyyy-MM-dd");
+
+            $("#slotContainer").html("Loading slots...");
+
+            $.getJSON("/User/GetBookedSlots", {
+                departmentId: selectedDept,
+                date: dateStr
+            }, function (bookedSlots) {
+                var html = "";
+
+                allSlots.forEach(function (slot) {
+                    var booked = bookedSlots.includes(slot);
+
+                    html += `
+                        <button class="k-button slotBtn ${booked ? 'k-state-disabled' : ''}" data-time="${slot}">
+                            ${slot}
+                        </button>
+                    `;
+                });
+
+                $("#slotContainer").html(html);
+            });
+        }
+
+        // Slot select
+        $(document).on("click", ".slotBtn:not(.k-state-disabled)", function () {
+            $(".slotBtn").removeClass("k-primary");
+            $(this).addClass("k-primary");
+
+            selectedSlot = $(this).data("time");
+            $("#confirmBtn").show();
+        });
+
+        // Confirm appointment
+        $("#confirmBtn").click(function () {
+            var date = $("#appointmentDate").data("kendoDatePicker").value();
+
+            $.ajax({
+                url: '/User/BookAppointment',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    c_DepartmentId: selectedDept,
+                    c_Date: kendo.toString(date, "yyyy-MM-dd"),
+                    c_Time: selectedSlot
+                }),
+                success: function (res) {
+                    if (res.success) {
+                        notification.show("Appointment booked successfully", "success");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        notification.show(res.message, "error");
+                    }
+                }
+            });
+        });
+    </script>
+}

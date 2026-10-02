@@ -1,0 +1,121 @@
+@{
+    ViewData["Title"] = "All Patients";
+    Layout = "_AdminLayout";
+}
+
+<section>
+    <div class="page-title">
+        <h1>All Patients</h1>
+        <p>View all registered patients.</p>
+    </div>
+
+    <div class="filter-row mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <input id="searchPatient" class="form-control" placeholder="Search by name, email or mobile" />
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100" id="refreshPatientGridBtn">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="patientsGrid"></div>
+</section>
+
+@section Scripts {
+    <script>
+                $(document).ready(function () {
+                    // Check if Kendo is loaded
+                    if (typeof kendo === "undefined") {
+                        console.error("Kendo UI is not loaded! Check CDN connection.");
+                        $("#patientsGrid").html("<div class='alert alert-danger'>Kendo UI library not loaded. Please check your internet connection.</div>");
+                        return;
+                    }
+
+                    console.log("Kendo UI version:", kendo.version);
+
+                    // Initialize Kendo Grid for Patients
+                    $("#patientsGrid").kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: "/Admin/GetPatients",
+                                    dataType: "json",
+                                    data: function () {
+                                        return {
+                                            search: $("#searchPatient").val()
+                                        };
+                                    }
+                                }
+                            },
+                            pageSize: 10,
+                            schema: {
+                                model: {
+                                    id: "patientId",
+                                    fields: {
+                                        patientId: { type: "number" },
+                                        name: { type: "string" },
+                                        email: { type: "string" },
+                                        mobile: { type: "string" },
+                                        gender: { type: "string" },
+                                        location: { type: "string" },
+                                        totalAppointments: { type: "number" }
+                                    }
+                                }
+                            }
+                        },
+                        sortable: true,
+                        filterable: true,
+                        pageable: {
+                            refresh: true,
+                            pageSizes: [5, 10, 20, 50],
+                            buttonCount: 5
+                        },
+                        columns: [
+                            { field: "patientId", title: "ID", width: 80 },
+                            { field: "name", title: "Name", width: 180 },
+                            {
+                                field: "email",
+                                title: "Email",
+                                width: 200,
+                                template: "#= email || '-' #"
+                            },
+                            {
+                                field: "mobile",
+                                title: "Mobile",
+                                width: 130,
+                                template: "#= mobile || '-' #"
+                            },
+                            {
+                                field: "gender",
+                                title: "Gender",
+                                width: 100,
+                                template: "#= gender || '-' #"
+                            },
+                            {
+                                field: "location",
+                                title: "Location",
+                                width: 150,
+                                template: "#= location || '-' #"
+                            },
+                            { field: "totalAppointments", title: "Total Appts", width: 120 }
+                        ]
+                    });
+
+                    // Refresh grid on button click
+                    $("#refreshPatientGridBtn").on("click", function () {
+                        var grid = $("#patientsGrid").data("kendoGrid");
+                        grid.dataSource.read();
+                    });
+
+                    // Refresh on Enter key
+                    $("#searchPatient").on("keypress", function (event) {
+                        if (event.which === 13) {
+                            var grid = $("#patientsGrid").data("kendoGrid");
+                            grid.dataSource.read();
+                        }
+                    });
+                });
+    </script>
+}

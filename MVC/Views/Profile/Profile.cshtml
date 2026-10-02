@@ -1,0 +1,1059 @@
+@* @model MVC.Models.PatientModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+
+
+<style> :root { --profile-control-height: 56px; } body { background: #f5f7f6; font-family: "Segoe UI", sans-serif; } .profile-wrap { margin-top: 1.2rem; } .profile-card, .form-card { background: #fff; border-radius: 12px; padding: 30px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05); height: 100%; } .profile-circle { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #2c8c7b, #b5a33d); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: auto; font-weight: 700; overflow: hidden; background-size: cover; background-position: center; } .info-box { background: #e8f4f3; padding: 12px; border-radius: 6px; margin-bottom: 20px; } .field-label { display: block; margin-bottom: 6px; font-weight: 600; color: #3b5a57; letter-spacing: 0.3px; } .field-label-row { display: flex; align-items: center; justify-content: flex-start; gap: 6px; margin-bottom: 6px; width: 100%; } .field-label-row .field-label { margin-bottom: 0; } .inline-field-error { color: #b91c1c; font-size: 13px; font-weight: 600; line-height: 1.2; white-space: nowrap; } .gender-box { border: 1px solid #c9d8d3; min-height: var(--profile-control-height); padding: 0 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; color: #3a4f4a; font-weight: 600; transition: all 0.2s ease; user-select: none; } .gender-box.gender-active { border: 2px solid #1f8f79; background: #e7f6f2; color: #116f5d; } .save-btn { background: #1f8f79; border: none; padding: 12px 30px; color: #fff; border-radius: 8px; font-weight: 600; } .left-meta { color: #3f5653; margin-bottom: 8px; } #sidebarGender { font-weight: 700; color: #1f8f79; } #uploadPhotoBtn { margin-top: 12px; width: 210px; display: inline-flex; } #uploadPhotoBtn.k-button { min-height: 46px; border-radius: 10px; border: 2px solid #1f8f79; background: #e7f6f2; color: #116f5d; font-weight: 700; letter-spacing: 0.2px; box-shadow: none; transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease; justify-content: center; text-align: center; align-items: center; padding-top: 0; padding-bottom: 0; } #uploadPhotoBtn .k-button-text { display: inline-flex; align-items: center; line-height: 1; } #uploadPhotoBtn.k-button:hover { background: #dcf2ec; filter: none; } #uploadPhotoBtn.k-button:active { transform: translateY(0); box-shadow: none; } #uploadPhotoBtn .k-button-icon { color: #116f5d; } #state, #city { display: block; width: 50%; } #fullname, #mobile, #email { width: 100%; min-height: var(--profile-control-height); padding: 0 14px; font-size: 15px; font-weight: 600; border: 2px solid #1f8f79; border-radius: 10px; background: #e7f6f2; color: #116f5d; box-shadow: none; } #fullname:focus, #mobile:focus, #email:focus { outline: none; border-color: #1f8f79; background: #dcf2ec; box-shadow: 0 0 0 3px rgba(31, 143, 121, 0.15); } #email, #email:focus { background: #eef2f3; border-color: #c8d3d6; color: #6b7f85; box-shadow: none; cursor: not-allowed; } .k-dropdownlist { width: 50%; } .k-dropdownlist .k-input-inner { padding: 10px 12px; font-size: 20px; color: #2f4a46; } .k-picker-solid { border: 1px solid #c9d8d3; border-radius: 8px; background-color: #fff; min-height: 44px; box-shadow: none; } .k-picker-solid:hover { border-color: #9fc3bb; } .k-picker-solid.k-focus, .k-picker-solid:focus-within { border-color: #1f8f79; box-shadow: 0 0 0 3px rgba(31, 143, 121, 0.15); } #locationRow .k-dropdownlist { width: 82% !important; display: block; } #locationRow .k-picker-solid { border: 1px solid #c9d8d3; border-radius: 10px; background: #fff; min-height: var(--profile-control-height); padding: 0 42px 0 18px; position: relative; } #locationRow .k-picker-solid:hover { border-color: #9fc3bb; background: #fff; } #locationRow .k-picker-solid.k-focus, #locationRow .k-picker-solid:focus-within { border-color: #1f8f79; background: #e7f6f2; box-shadow: none; } #locationRow .k-input-value-text { color: #116f5d; font-weight: 700; font-size: 15px; line-height: 1; width: 100% !important; text-align: center; position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); } #locationRow .k-input-values { display: flex; align-items: center; justify-content: center; width: 100% !important; position: relative; } #locationRow .k-dropdownlist .k-input-inner { text-align: center; } #locationRow .k-input-button .k-icon { font-size: 20px; color: #116f5d; } #locationRow .k-input-button { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); } #locationRow .k-dropdownlist, #locationRow .k-dropdownlist *, .k-list-content .k-list-item, .k-list-ul .k-list-item { cursor: pointer !important; } @@media (max-width: 768px) { #locationRow .k-dropdownlist { width: 100% !important; } } .k-list-content .k-list-item, .k-list-ul .k-list-item { padding: 8px 12px; font-size: 16px; line-height: 1.2; border-radius: 8px; margin: 3px 6px; color: #1d3f3a; } .k-list-content .k-list-item:hover, .k-list-ul .k-list-item:hover { background-color: #eef8f5; } .k-list-content .k-list-item.k-selected { background-color: #d8eee8; color: #116f5d; font-weight: 700; } .city-dropdown-placeholder { color: #7a8f8b; } .k-list-ul, .k-list-content ul { list-style: none !important; margin: 0 !important; padding: 0 !important; } .k-animation-container, .k-popup, .k-list-container { z-index: 20000 !important; } .field-error { min-height: 34px; margin-top: 8px; padding: 6px 10px; border-radius: 8px; border-left: 4px solid #dc2626; background: #feeceb; color: #b91c1c; font-size: 15px; font-weight: 600; display: flex; align-items: center; } .field-error.hidden { display: none; } .gender-error .gender-box { border-color: #dc2626 !important; } #appNotification { display: none; } .k-notification { min-width: 260px; max-width: 340px; border-radius: 8px; border: 0; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18); } .k-notification-container { z-index: 30000 !important; right: 16px !important; top: 16px !important; left: auto !important; bottom: auto !important; width: auto !important; } .k-notification-success { background: #57c13d !important; color: #fff !important; } .k-notification-error { background: #cc2f5a !important; color: #fff !important; } .k-notification-info { background: #2574d9 !important; color: #fff !important; } .toast-row { display: flex; align-items: center; gap: 8px; padding: 9px 11px; font-size: 14px; font-weight: 700; line-height: 1.25; } .toast-icon { width: 24px; height: 24px; border-radius: 6px; border: 2px solid rgba(255, 255, 255, 0.7); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; flex: 0 0 24px; } .toast-text { flex: 1 1 auto; } .toast-close { background: transparent; border: 0; color: #fff; font-size: 22px; line-height: 1; font-weight: 700; padding: 0; margin: 0; cursor: pointer; } </style>
+
+<link href="https://kendo.cdn.telerik.com/2024.1.130/styles/kendo.default-v2.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/@@progress/kendo-font-icons/dist/index.css" rel="stylesheet" />
+
+<div class="container profile-wrap">
+
+<div id="appNotification"></div>
+
+<div class="row g-3">
+
+<div class="col-md-4">
+
+<div class="profile-card text-center">
+
+<img id="profileCircle" class="profile-circle"/>DP
+
+<h4 id="sidebarName" class="mt-3"></h4>
+
+<p id="sidebarEmail"></p>
+
+<span class="badge bg-success">Patient</span>
+
+<hr />
+
+<p id="sidebarLocation" class="left-meta"></p>
+<p id="sidebarMobile" class="left-meta"></p>
+<p id="sidebarGender" class="left-meta"></p>
+
+<button id="uploadPhotoBtn">Upload Photo</button>
+
+<input id="photoInput" type="file" accept="image/*" style="display:none;" />
+
+</div>
+
+</div>
+
+<div class="col-md-8">
+
+<div class="form-card">
+
+<h5>Edit Profile Information</h5>
+
+<div class="info-box">
+Email and password cannot be changed on this page for security reasons.
+</div>
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+<label class="field-label">Full Name</label>
+<input id="fullname" />
+<div id="nameError" class="field-error hidden"></div>
+</div>
+
+<div class="col-md-6 mb-3">
+<label class="field-label">Mobile</label>
+<input id="mobile" />
+<div id="mobileError" class="field-error hidden"></div>
+</div>
+
+</div>
+
+<div class="mb-3">
+<label class="field-label">Email</label>
+<input id="email" />
+</div>
+
+<div class="mb-3">
+
+<label class="field-label">Gender</label>
+
+<div id="genderGroup" class="row mt-2">
+
+<div class="col-md-4 mb-2">
+<div class="gender-box" data-gender="Male">Male</div>
+</div>
+
+<div class="col-md-4 mb-2">
+<div class="gender-box" data-gender="Female">Female</div>
+</div>
+
+<div class="col-md-4 mb-2">
+<div class="gender-box" data-gender="Other">Other</div>
+</div>
+
+</div>
+
+<div id="genderError" class="field-error hidden"></div>
+
+</div>
+
+<div class="row" id="locationRow">
+
+<div class="col-md-6 mb-3">
+<label class="field-label">State</label>
+<input id="state" />
+<span id="stateError" class="inline-field-error hidden"></span>
+</div>
+
+<div class="col-md-6 mb-3">
+<label class="field-label">City</label>
+<input id="city" />
+<span id="cityError" class="inline-field-error hidden"></span>
+</div>
+
+</div>
+
+<button class="save-btn">Save Changes</button>
+
+<div id="saveStatus" class="mt-2 small"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+@section Scripts {
+@* <script src="https://kendo.cdn.telerik.com/2024.1.130/js/kendo.all.min.js"></script> *@
+<script>
+$(function () {
+    var currentImageData = null;
+    var currentPatientId = 0;
+    @* var stateDropDown; *@
+    var cityDropDown;
+
+    @* var notification = $("#appNotification").kendoNotification({
+        autoHideAfter: 1500,
+        position: { pinned: true, top: 20, right: 20 }
+    }).data("kendoNotification"); *@
+
+    // Creates a new div, appends it to the body, and initializes the notification
+var notification = $("<div></div>").appendTo(document.body).kendoNotification({
+    autoHideAfter: 1500,
+    position: { pinned: true, top: 20, right: 20 }
+}).data("kendoNotification");
+
+    function showNotification(msg, type) {
+        notification.show(msg, type || "info");
+    }
+
+    $("#fullname").kendoTextBox();
+    $("#mobile").kendoTextBox();
+    $("#email").kendoTextBox({ enable: false });
+
+    // FIXED: Mapped to stateName and stateId from the Controller
+    stateDropDown = $("#state").kendoDropDownList({
+        dataTextField: "stateName", 
+        dataValueField: "stateId",
+        optionLabel: "Select State",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "@Url.Action("GetStates", "Profile")",
+                    dataType: "json"
+                }
+            }
+        },
+        change: function () {
+            var stateId = this.value();
+            cityDropDown.value("");
+            cityDropDown.enable(!!stateId);
+            cityDropDown.dataSource.read({ stateId: stateId });
+        }
+    }).data("kendoDropDownList");
+
+    // FIXED: Mapped to cityName and cityId from the Controller
+    cityDropDown = $("#city").kendoDropDownList({
+        dataTextField: "cityName",
+        dataValueField: "cityId",
+        autoBind: false,
+        enable: false,
+        optionLabel: "Select City",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "@Url.Action("GetCitiesByStateId", "Profile")",
+                    dataType: "json",
+                    data: function () {
+                        return { stateId: stateDropDown.value() };
+                    }
+                }
+            }
+        }
+    }).data("kendoDropDownList");
+
+    $("#uploadPhotoBtn").kendoButton();
+    $("#uploadPhotoBtn").click(function () {
+        $("#photoInput").click();
+    });
+
+    $("#photoInput").change(function (e) {
+        var file = e.target.files[0];
+        if (!file || !file.type.startsWith("image/")) return;
+
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            currentImageData = evt.target.result;
+            $("#profileCircle")
+                .css("background-image", "url('" + currentImageData + "')")
+                .text("");
+        };
+        reader.readAsDataURL(file);
+    });
+
+    $(".gender-box").click(function () {
+        $(".gender-box").removeClass("gender-active");
+        $(this).addClass("gender-active");
+        $("#sidebarGender").text($(this).data("gender"));
+    });
+
+    function clearErrors() {
+        $("#nameError,#mobileError,#genderError,#stateError,#cityError")
+            .text("")
+            .addClass("hidden");
+    }
+
+    function setError(id, msg) {
+        $(id).text(msg).removeClass("hidden");
+    }
+
+    function validate(payload) {
+        var valid = true;
+        clearErrors();
+        if (!payload.c_Name) { setError("#nameError", "Name required"); valid = false; }
+        if (!payload.c_Mobile) { setError("#mobileError", "Mobile required"); valid = false; }
+        if (!payload.c_Gender) { setError("#genderError", "Gender required"); valid = false; }
+        if (!payload.c_StateId) { setError("#stateError", "State required"); valid = false; }
+        if (!payload.c_CityId) { setError("#cityError", "City required"); valid = false; }
+        return valid;
+    }
+
+    function applyProfile(p) {
+        currentPatientId = p.c_PatientId;
+        currentImageData = p.c_Image;
+        console.log(currentImageData);
+        $("#fullname").data("kendoTextBox").value(p.c_Name);
+        $("#mobile").data("kendoTextBox").value(p.c_Mobile);
+        $("#email").data("kendoTextBox").value(p.c_Email);
+
+        $(".gender-box").removeClass("gender-active");
+        $(".gender-box[data-gender='" + p.c_Gender + "']").addClass("gender-active");
+
+        $("#sidebarName").text(p.c_Name);
+        $("#sidebarEmail").text(p.c_Email);
+        $("#sidebarMobile").text(p.c_Mobile);
+        $("#sidebarGender").text(p.c_Gender);
+
+        if (p.c_Image) {
+            $("#profileCircle").css("background-image", "url('../photos/" + p.c_Image + "')").text("");
+        }
+
+        if (p.c_StateId) {
+            stateDropDown.value(p.c_StateId);
+            stateDropDown.trigger("change");
+            // Set timeout ensures city loads before setting value
+            setTimeout(() => { cityDropDown.value(p.c_CityId); }, 200); 
+        }
+    }
+
+    // FIXED: Removed c_PatientId from payload. The backend knows who is logged in.
+    $.getJSON("@Url.Action("GetProfile", "Profile")")
+        .done(function (p) {
+            applyProfile(p);
+        })
+        .fail(function () {
+            showNotification("Profile load failed", "error");
+        });
+
+    $(".save-btn").click(function () {
+        var payload = {
+            c_PatientId: currentPatientId,
+            // FIXED: Removed c_PatientId from here as well
+            c_Name: $("#fullname").data("kendoTextBox").value(),
+            c_Email: $("#email").data("kendoTextBox").value(),
+            c_Mobile: $("#mobile").data("kendoTextBox").value(),
+            c_Gender: $(".gender-box.active").length ? $(".gender-box.active").data("gender") : $(".gender-box.gender-active").data("gender"),
+            c_StateId: Number(stateDropDown.value()),
+            c_CityId: Number(cityDropDown.value()),
+            c_Image: currentImageData
+        };
+
+        if (!validate(payload)) return;
+
+        $.ajax({
+            url: "@Url.Action("UpdateProfile", "Profile")",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(payload)
+        })
+        .done(function (res) {
+            showNotification("Profile updated", "success");
+            applyProfile(res.patient);
+        })
+        .fail(function () {
+            showNotification("Update failed", "error");
+        });
+    });
+});
+</script>
+} 
+
+@model MVC.Models.PatientModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<style>
+:root {
+    --profile-control-height: 56px;
+}
+
+body {
+    background: #f5f7f6;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.profile-wrap {
+    margin-top: 1.2rem;
+}
+
+.profile-card,
+.form-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    height: 100%;
+}
+
+.profile-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#2c8c7b,#b5a33d);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: auto;
+    font-weight: 700;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+}
+
+.info-box {
+    background: #e8f4f3;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.field-label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #3b5a57;
+    letter-spacing: 0.3px;
+}
+
+.field-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    margin-bottom: 6px;
+    width: 100%;
+}
+
+.field-label-row .field-label {
+    margin-bottom: 0;
+}
+
+.inline-field-error {
+    color: #b91c1c;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.gender-box {
+    border: 1px solid #c9d8d3;
+    min-height: var(--profile-control-height);
+    padding: 0 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #3a4f4a;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.gender-box.gender-active {
+    border: 2px solid #1f8f79;
+    background: #e7f6f2;
+    color: #116f5d;
+}
+
+.save-btn {
+    background: #1f8f79;
+    border: none;
+    padding: 12px 30px;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.left-meta {
+    color: #3f5653;
+    margin-bottom: 8px;
+}
+
+#sidebarGender {
+    font-weight: 700;
+    color: #1f8f79;
+}
+
+#uploadPhotoBtn {
+    margin-top: 12px;
+    width: 210px;
+    display: inline-flex;
+}
+
+#uploadPhotoBtn.k-button {
+    min-height: 46px;
+    border-radius: 10px;
+    border: 2px solid #1f8f79;
+    background: #e7f6f2;
+    color: #116f5d;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    box-shadow: none;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#uploadPhotoBtn .k-button-text {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
+#uploadPhotoBtn.k-button:hover {
+    background: #dcf2ec;
+    filter: none;
+}
+
+#uploadPhotoBtn.k-button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+#uploadPhotoBtn .k-button-icon {
+    color: #116f5d;
+}
+
+#state,
+#city {
+    display: block;
+    width: 50%;
+}
+
+#fullname,
+#mobile,
+#email {
+    width: 100%;
+    min-height: var(--profile-control-height);
+    padding: 0 14px;
+    font-size: 15px;
+    font-weight: 600;
+    border: 2px solid #1f8f79;
+    border-radius: 10px;
+    background: #e7f6f2;
+    color: #116f5d;
+    box-shadow: none;
+}
+
+#fullname:focus,
+#mobile:focus,
+#email:focus {
+    outline: none;
+    border-color: #1f8f79;
+    background: #dcf2ec;
+    box-shadow: 0 0 0 3px rgba(31,143,121,0.15);
+}
+
+#email,
+#email:focus {
+    background: #eef2f3;
+    border-color: #c8d3d6;
+    color: #6b7f85;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.k-dropdownlist {
+    width: 50%;
+}
+
+.k-dropdownlist .k-input-inner {
+    padding: 10px 12px;
+    font-size: 20px;
+    color: #2f4a46;
+}
+
+.k-picker-solid {
+    border: 1px solid #c9d8d3;
+    border-radius: 8px;
+    background-color: #fff;
+    min-height: 44px;
+    box-shadow: none;
+}
+
+.k-picker-solid:hover {
+    border-color: #9fc3bb;
+}
+
+.k-picker-solid.k-focus,
+.k-picker-solid:focus-within {
+    border-color: #1f8f79;
+    box-shadow: 0 0 0 3px rgba(31,143,121,0.15);
+}
+
+#locationRow .k-dropdownlist {
+    width: 82% !important;
+    display: block;
+}
+
+#locationRow .k-picker-solid {
+    border: 1px solid #c9d8d3;
+    border-radius: 10px;
+    background: #fff;
+    min-height: var(--profile-control-height);
+    padding: 0 42px 0 18px;
+    position: relative;
+}
+
+#locationRow .k-picker-solid:hover {
+    border-color: #9fc3bb;
+    background: #fff;
+}
+
+#locationRow .k-picker-solid.k-focus,
+#locationRow .k-picker-solid:focus-within {
+    border-color: #1f8f79;
+    background: #e7f6f2;
+    box-shadow: none;
+}
+
+#locationRow .k-input-value-text {
+    color: #116f5d;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1;
+    width: 100% !important;
+    text-align: center;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#locationRow .k-input-values {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100% !important;
+    position: relative;
+}
+
+#locationRow .k-dropdownlist .k-input-inner {
+    text-align: center;
+}
+
+#locationRow .k-input-button .k-icon {
+    font-size: 20px;
+    color: #116f5d;
+}
+
+#locationRow .k-input-button {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#locationRow .k-dropdownlist,
+#locationRow .k-dropdownlist *,
+.k-list-content .k-list-item,
+.k-list-ul .k-list-item {
+    cursor: pointer !important;
+}
+
+@@media (max-width:768px) {
+    #locationRow .k-dropdownlist {
+        width: 100% !important;
+    }
+}
+
+.k-list-content .k-list-item,
+.k-list-ul .k-list-item {
+    padding: 8px 12px;
+    font-size: 16px;
+    line-height: 1.2;
+    border-radius: 8px;
+    margin: 3px 6px;
+    color: #1d3f3a;
+}
+
+.k-list-content .k-list-item:hover,
+.k-list-ul .k-list-item:hover {
+    background-color: #eef8f5;
+}
+
+.k-list-content .k-list-item.k-selected {
+    background-color: #d8eee8;
+    color: #116f5d;
+    font-weight: 700;
+}
+
+.city-dropdown-placeholder {
+    color: #7a8f8b;
+}
+
+.k-list-ul,
+.k-list-content ul {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.k-animation-container,
+.k-popup,
+.k-list-container {
+    z-index: 20000 !important;
+}
+
+.field-error {
+    min-height: 34px;
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border-left: 4px solid #dc2626;
+    background: #feeceb;
+    color: #b91c1c;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.field-error.hidden {
+    display: none;
+}
+
+.gender-error .gender-box {
+    border-color: #dc2626 !important;
+}
+
+#appNotification {
+    display: none;
+}
+
+.k-notification {
+    min-width: 260px;
+    max-width: 340px;
+    border-radius: 8px;
+    border: 0;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+}
+
+.k-notification-container {
+    z-index: 30000 !important;
+    right: 16px !important;
+    top: 16px !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: auto !important;
+}
+
+.k-notification-success {
+    background: #57c13d !important;
+    color: #fff !important;
+}
+
+.k-notification-error {
+    background: #cc2f5a !important;
+    color: #fff !important;
+}
+
+.k-notification-info {
+    background: #2574d9 !important;
+    color: #fff !important;
+}
+
+.toast-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 11px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.toast-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid rgba(255,255,255,0.7);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+    flex: 0 0 24px;
+}
+
+.toast-text {
+    flex: 1 1 auto;
+}
+
+.toast-close {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 700;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+</style>
+
+<link href="https://kendo.cdn.telerik.com/2024.1.130/styles/kendo.default-v2.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/@@progress/kendo-font-icons/dist/index.css" rel="stylesheet" />
+
+<div class="container profile-wrap">
+
+<div id="appNotification"></div>
+
+<div class="row g-3">
+
+<div class="col-md-4">
+
+<div class="profile-card text-center">
+
+<img id="profileCircle" class="profile-circle"/>DP
+
+<h4 id="sidebarName" class="mt-3"></h4>
+
+<p id="sidebarEmail"></p>
+
+<span class="badge bg-success">Patient</span>
+
+<hr />
+
+<p id="sidebarLocation" class="left-meta"></p>
+<p id="sidebarMobile" class="left-meta"></p>
+<p id="sidebarGender" class="left-meta"></p>
+
+<button id="uploadPhotoBtn">Upload Photo</button>
+
+<input id="photoInput" type="file" accept="image/*" style="display:none;" />
+
+</div>
+
+</div>
+
+<div class="col-md-8">
+
+<div class="form-card">
+
+<h5>Edit Profile Information</h5>
+
+<div class="info-box">
+Email and password cannot be changed on this page for security reasons.
+</div>
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+<label class="field-label">Full Name</label>
+<input id="fullname" />
+<div id="nameError" class="field-error hidden"></div>
+</div>
+
+<div class="col-md-6 mb-3">
+<label class="field-label">Mobile</label>
+<input id="mobile" />
+<div id="mobileError" class="field-error hidden"></div>
+</div>
+
+</div>
+
+<div class="mb-3">
+<label class="field-label">Email</label>
+<input id="email" />
+</div>
+
+<div class="mb-3">
+
+<label class="field-label">Gender</label>
+
+<div id="genderGroup" class="row mt-2">
+
+<div class="col-md-4 mb-2">
+<div class="gender-box" data-gender="Male">Male</div>
+</div>
+
+<div class="col-md-4 mb-2">
+<div class="gender-box" data-gender="Female">Female</div>
+</div>
+
+<div class="col-md-4 mb-2">
+<div class="gender-box" data-gender="Other">Other</div>
+</div>
+
+</div>
+
+<div id="genderError" class="field-error hidden"></div>
+
+</div>
+
+<div class="row" id="locationRow">
+
+<div class="col-md-6 mb-3">
+<label class="field-label">State</label>
+<input id="state" />
+<span id="stateError" class="inline-field-error hidden"></span>
+</div>
+
+<div class="col-md-6 mb-3">
+<label class="field-label">City</label>
+<input id="city" />
+<span id="cityError" class="inline-field-error hidden"></span>
+</div>
+
+</div>
+
+<button class="save-btn">Save Changes</button>
+
+<div id="saveStatus" class="mt-2 small"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+@section Scripts {
+@* <script src="https://kendo.cdn.telerik.com/2024.1.130/js/kendo.all.min.js"></script> *@
+<script>
+$(function () {
+    var currentImageData = null;
+    var stateDropDown;
+    var cityDropDown;
+
+    @* var notification = $("#appNotification").kendoNotification({
+        autoHideAfter: 1500,
+        position: { pinned: true, top: 20, right: 20 }
+    }).data("kendoNotification"); *@
+
+    // Creates a new div, appends it to the body, and initializes the notification
+var notification = $("<div></div>").appendTo(document.body).kendoNotification({
+    autoHideAfter: 1500,
+    position: { pinned: true, top: 20, right: 20 }
+}).data("kendoNotification");
+
+    function showNotification(msg, type) {
+        notification.show(msg, type || "info");
+    }
+
+    $("#fullname").kendoTextBox();
+    $("#mobile").kendoTextBox();
+    var emailTextBox = $("#email").kendoTextBox({ enable: false }).data("kendoTextBox");
+    emailTextBox.wrapper.css("width", "100%");
+
+    // FIXED: Mapped to stateName and stateId from the Controller
+    stateDropDown = $("#state").kendoDropDownList({
+        dataTextField: "stateName", 
+        dataValueField: "stateId",
+        optionLabel: "Select State",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "@Url.Action("GetStates", "Profile")",
+                    dataType: "json"
+                }
+            }
+        },
+        change: function () {
+            var stateId = this.value();
+            cityDropDown.value("");
+            cityDropDown.enable(!!stateId);
+            cityDropDown.dataSource.read({ stateId: stateId });
+        }
+    }).data("kendoDropDownList");
+
+    // FIXED: Mapped to cityName and cityId from the Controller
+    cityDropDown = $("#city").kendoDropDownList({
+        dataTextField: "cityName",
+        dataValueField: "cityId",
+        autoBind: false,
+        enable: false,
+        optionLabel: "Select City",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "@Url.Action("GetCitiesByStateId", "Profile")",
+                    dataType: "json",
+                    data: function () {
+                        return { stateId: stateDropDown.value() };
+                    }
+                }
+            }
+        }
+    }).data("kendoDropDownList");
+
+    $("#uploadPhotoBtn").kendoButton();
+    $("#uploadPhotoBtn").click(function () {
+        $("#photoInput").click();
+    });
+
+    $("#photoInput").change(function (e) {
+        var file = e.target.files[0];
+        if (!file || !file.type.startsWith("image/")) return;
+
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            currentImageData = evt.target.result;
+            $("#profileCircle")
+                .css("background-image", "url('" + currentImageData + "')")
+                .text("");
+        };
+        reader.readAsDataURL(file);
+    });
+
+    $(".gender-box").click(function () {
+        $(".gender-box").removeClass("gender-active");
+        $(this).addClass("gender-active");
+        $("#sidebarGender").text($(this).data("gender"));
+    });
+
+    function clearErrors() {
+        $("#nameError,#mobileError,#genderError,#stateError,#cityError")
+            .text("")
+            .addClass("hidden");
+    }
+
+    function setError(id, msg) {
+        $(id).text(msg).removeClass("hidden");
+    }
+
+    function validate(payload) {
+        var valid = true;
+        clearErrors();
+        if (!payload.c_Name) { setError("#nameError", "Name required"); valid = false; }
+        if (!payload.c_Mobile) { setError("#mobileError", "Mobile required"); valid = false; }
+        if (!payload.c_Gender) { setError("#genderError", "Gender required"); valid = false; }
+        if (!payload.c_StateId) { setError("#stateError", "State required"); valid = false; }
+        if (!payload.c_CityId) { setError("#cityError", "City required"); valid = false; }
+        return valid;
+    }
+
+    function applyProfile(p) {
+        currentImageData = p.c_Image;
+        console.log(currentImageData);
+        $("#fullname").data("kendoTextBox").value(p.c_Name);
+        $("#mobile").data("kendoTextBox").value(p.c_Mobile);
+        $("#email").data("kendoTextBox").value(p.c_Email);
+
+        $(".gender-box").removeClass("gender-active");
+        $(".gender-box[data-gender='" + p.c_Gender + "']").addClass("gender-active");
+
+        $("#sidebarName").text(p.c_Name);
+        $("#sidebarEmail").text(p.c_Email);
+        $("#sidebarMobile").text(p.c_Mobile);
+        $("#sidebarGender").text(p.c_Gender);
+
+        if (p.c_Image) {
+            $("#profileCircle").css("background-image", "url('../photos/" + p.c_Image + "')").text("");
+        }
+
+        if (p.c_StateId) {
+            stateDropDown.value(p.c_StateId);
+            stateDropDown.trigger("change");
+            // Set timeout ensures city loads before setting value
+            setTimeout(() => { cityDropDown.value(p.c_CityId); }, 200); 
+        }
+    }
+
+    // FIXED: Removed c_PatientId from payload. The backend knows who is logged in.
+    $.getJSON("@Url.Action("GetProfile", "Profile")")
+        .done(function (p) {
+            applyProfile(p);
+        })
+        .fail(function () {
+            showNotification("Profile load failed", "error");
+        });
+
+    $(".save-btn").click(function () {
+        var payload = {
+            // FIXED: Removed c_PatientId from here as well
+            c_Name: $("#fullname").data("kendoTextBox").value(),
+            c_Email: $("#email").data("kendoTextBox").value(),
+            c_Mobile: $("#mobile").data("kendoTextBox").value(),
+            c_Gender: $(".gender-box.active").length ? $(".gender-box.active").data("gender") : $(".gender-box.gender-active").data("gender"),
+            c_StateId: Number(stateDropDown.value()),
+            c_CityId: Number(cityDropDown.value()),
+            c_Image: currentImageData
+        };
+
+        if (!validate(payload)) return;
+
+        $.ajax({
+            url: "@Url.Action("UpdateProfile", "Profile")",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(payload)
+        })
+        .done(function (res) {
+            showNotification("Profile updated", "success");
+            applyProfile(res.patient);
+        })
+        .fail(function () {
+            showNotification("Update failed", "error");
+        });
+    });
+});
+</script>
+}

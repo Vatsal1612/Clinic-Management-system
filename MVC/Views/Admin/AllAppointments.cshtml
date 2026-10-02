@@ -1,0 +1,188 @@
+@{
+    ViewData["Title"] = "All Appointments";
+    Layout = "_AdminLayout";
+}
+
+<section>
+    <div class="page-title">
+        <h1>All Appointments</h1>
+        <p>Search, filter and update appointment status.</p>
+    </div>
+
+    <div class="filter-row mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <input id="searchAppointment" class="form-control"
+                       placeholder="Search patient, department or appointment ID" />
+            </div>
+            <div class="col-md-3">
+                <input id="departmentFilter" />
+            </div>
+            <div class="col-md-3">
+                <input id="statusFilter" />
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100" id="refreshGridBtn">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="appointmentsGrid"></div>
+</section>
+
+@section Scripts {
+    <script>
+                $(document).ready(function () {
+                    // Check if Kendo is loaded
+                    if (typeof kendo === "undefined") {
+                        console.error("Kendo UI is not loaded! Check CDN connection.");
+                        $("#appointmentsGrid").html("<div class='alert alert-danger'>Kendo UI library not loaded. Please check your internet connection.</div>");
+                        return;
+                    }
+
+                    console.log("Kendo UI version:", kendo.version);
+
+                    // Initialize Department DropDownList
+                    $("#departmentFilter").kendoDropDownList({
+                        dataTextField: "departmentName",
+                        dataValueField: "departmentId",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: "/Admin/GetDepartments",
+                                    dataType: "json"
+                                }
+                            }
+                        },
+                        optionLabel: "All Departments",
+                        filter: "contains",
+                        suggest: true
+                    });
+
+                    // Initialize Status DropDownList
+                    $("#statusFilter").kendoDropDownList({
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: [
+                            { text: "All Status", value: "" },
+                            { text: "Confirmed", value: "Confirmed" },
+                            { text: "Pending", value: "Pending" },
+                            { text: "Cancelled", value: "Cancelled" }
+                        ],
+                        value: ""
+                    });
+
+                    // Initialize Kendo Grid
+                    $("#appointmentsGrid").kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: "/Admin/GetAppointments",
+                                    dataType: "json",
+                                    data: function () {
+                                        return {
+                                            search: $("#searchAppointment").val(),
+                                            departmentId: $("#departmentFilter").val(),
+                                            status: $("#statusFilter").val()
+                                        };
+                                    }
+                                }
+                            },
+                            pageSize: 10,
+                            schema: {
+                                model: {
+                                    id: "appointmentId",
+                                    fields: {
+                                        appointmentId: { type: "number" },
+                                        patientName: { type: "string" },
+                                        departmentName: { type: "string" },
+                                        appointmentDate: { type: "string" },
+                                        appointmentTime: { type: "string" },
+                                        status: { type: "string" }
+                                    }
+                                }
+                            }
+                        },
+                        sortable: true,
+                        filterable: true,
+                        pageable: {
+                            refresh: true,
+                            pageSizes: [5, 10, 20, 50],
+                            buttonCount: 5
+                        },
+                        columns: [
+                            { field: "appointmentId", title: "ID", width: 80 },
+                            { field: "patientName", title: "Patient", width: 150 },
+                            { field: "departmentName", title: "Department", width: 150 },
+                            { field: "appointmentDate", title: "Date", width: 120 },
+                            { field: "appointmentTime", title: "Time", width: 100 },
+                            {
+                                field: "status",
+                                title: "Status",
+                                width: 120,
+                                template: "# var status = status || ''; # <span class='status-pill status-#=status.toLowerCase()#'>#=status#</span>"
+                            },
+                            {
+                                title: "Change Status",
+                                width: 200,
+                                template: function (dataItem) {
+                                    if (dataItem.status === "Cancelled") {
+                                        return "";
+                                    }
+                                    return "<button class='btn btn-success btn-sm me-1' onclick='updateStatus(" + dataItem.appointmentId + ", \"Confirmed\")'>Confirm</button>" +
+                                           "<button class='btn btn-danger btn-sm' onclick='updateStatus(" + dataItem.appointmentId + ", \"Cancelled\")'>Cancel</button>";
+                                }
+                            }
+                        ],
+                        dataBound: function () {
+                            var grid = this;
+                            var rows = grid.tbody.find("tr");
+                            rows.each(function () {
+                                var row = $(this);
+                                var dataItem = grid.dataItem(row);
+                                if (dataItem.status === "Cancelled") {
+                                    row.find("td:last-child").empty();
+                                }
+                            });
+                        }
+                    });
+
+                    // Refresh grid on button click
+                    $("#refreshGridBtn").on("click", function () {
+                        var grid = $("#appointmentsGrid").data("kendoGrid");
+                        grid.dataSource.read();
+                    });
+
+                    // Refresh on Enter key
+                    $("#searchAppointment").on("keypress", function (event) {
+                        if (event.which === 13) {
+                            var grid = $("#appointmentsGrid").data("kendoGrid");
+                            grid.dataSource.read();
+                        }
+                    });
+
+                    // Refresh on dropdown change
+                    $("#departmentFilter, #statusFilter").on("change", function () {
+                        var grid = $("#appointmentsGrid").data("kendoGrid");
+                        grid.dataSource.read();
+                    });
+                });
+
+                function updateStatus(appointmentId, status) {
+                    $.ajax({
+                        url: "/Admin/UpdateAppointmentStatus",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ appointmentId: appointmentId, status: status }),
+                        success: function () {
+                            var grid = $("#appointmentsGrid").data("kendoGrid");
+                            grid.dataSource.read();
+                        },
+                        error: function (xhr) {
+                            const message = xhr.responseJSON?.message || "Status update failed";
+                            alert(message);
+                        }
+                    });
+                }
+    </script>
+}

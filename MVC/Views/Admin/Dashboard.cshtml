@@ -1,0 +1,291 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<section class="dashboard">
+    <div class="dashboard__hero">
+        <h1>Admin Dashboard</h1>
+        <p>Review pending appointments and today's schedule.</p>
+    </div>
+
+    <!-- Stats Cards Row -->
+    <div class="dashboard__stats">
+        <div class="stat-card stat-card--total">
+            <div class="stat-card__icon"></div>
+            <div>
+                <h3 id="totalAppointments">0</h3>
+                <p>Total Appointments</p>
+            </div>
+        </div>
+        <div class="stat-card stat-card--confirmed">
+            <div class="stat-card__icon"></div>
+            <div>
+                <h3 id="confirmedAppointments">0</h3>
+                <p>Confirmed</p>
+            </div>
+        </div>
+        <div class="stat-card stat-card--pending">
+            <div class="stat-card__icon"></div>
+            <div>
+                <h3 id="pendingAppointments">0</h3>
+                <p>Pending</p>
+            </div>
+        </div>
+        <div class="stat-card stat-card--cancelled">
+            <div class="stat-card__icon"></div>
+            <div>
+                <h3 id="cancelledAppointments">0</h3>
+                <p>Cancelled</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Appointments - Full Width -->
+    <div class="card-panel mt-4">
+        <div class="card-panel__header">
+            <h2>Pending Appointments</h2>
+        </div>
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Appt ID</th>
+                        <th>Patient</th>
+                        <th>Department</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingRows"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Appointment Distribution and Today's Schedule - Split Layout -->
+    <div class="dashboard__split">
+        <div class="card-panel">
+            <div class="card-panel__header">
+                <h2>Appointment Distribution</h2>
+            </div>
+            <div id="distributionChart" style="height: 350px;"></div>
+        </div>
+        <div class="card-panel">
+            <div class="card-panel__header">
+                <h2>Today's Schedule</h2>
+                <small id="todayDateLabel"></small>
+            </div>
+            <div id="calendar" style="height: 450px; width: 100%;"></div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+            var calendar;
+            var distributionChart;
+
+            function renderRows(targetSelector, items) {
+                if (!items || items.length === 0) {
+                    $(targetSelector).html("<tr><td colspan='5' class='text-center text-muted'>No records found</td></tr>");
+                    return;
+                }
+
+                var rows = items.map(function (item) {
+                    return "<tr>" +
+                        "<td>" + item.appointmentId + "</td>" +
+                        "<td>" + item.patientName + "</td>" +
+                        "<td>" + item.departmentName + "</td>" +
+                        "<td>" + item.appointmentTime + "</td>" +
+                        "<td><span class='status-pill status-" + (item.status || "").toLowerCase() + "'>" + item.status + "</span></td>" +
+                        "</tr>";
+                });
+
+                $(targetSelector).html(rows.join(""));
+            }
+
+            function getStatusColor(status) {
+                var s = (status || "").toLowerCase();
+                if (s === "confirmed") return "#10b981";
+                if (s === "pending") return "#f59e0b";
+                if (s === "cancelled") return "#f43f5e";
+                return "#6b7280";
+            }
+
+            function initCharts(total, confirmed, pending, cancelled) {
+                // Bar Chart for Comparison
+                $("#distributionChart").kendoChart({
+                    title: {
+                        text: "Status Comparison",
+                        position: "top"
+                    },
+                    legend: {
+                        position: "bottom"
+                    },
+                    seriesDefaults: {
+                        type: "bar"
+                    },
+                    series: [
+                        {
+                            name: "Count",
+                            data: [confirmed, pending, cancelled],
+                            color: "#3b82f6"
+                        }
+                    ],
+                    categoryAxis: {
+                        categories: ["Confirmed", "Pending", "Cancelled"],
+                        majorGridLines: {
+                            visible: false
+                        }
+                    },
+                    valueAxis: {
+                        labels: {
+                            format: "{0}"
+                        }
+                    },
+                    tooltip: {
+                        visible: true,
+                        format: "{0}"
+                    }
+                });
+            }
+
+            function initCalendar(events) {
+                console.log("Initializing FullCalendar with events:", events);
+                console.log("FullCalendar defined:", typeof FullCalendar !== "undefined");
+
+                try {
+                    if (typeof FullCalendar === "undefined") {
+                        console.error("FullCalendar is not loaded!");
+                        $("#calendar").html("<div class='alert alert-warning'>Calendar library not loaded. Please refresh the page.</div>");
+                        return;
+                    }
+
+                    var calendarEl = document.getElementById('calendar');
+
+                    if (calendar) {
+                        calendar.destroy();
+                    }
+
+                    calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'listWeek',
+                        initialDate: new Date(),
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                        },
+                        height: 'auto',
+                        slotMinTime: '07:00:00',
+                        slotMaxTime: '21:00:00',
+                        allDaySlot: false,
+                        editable: false,
+                        selectable: false,
+                        columnEventOverlap: false,
+                        events: events,
+                        eventDidMount: function (info) {
+                            var status = info.event.extendedProps.status;
+                            var bgColor = getStatusColor(status);
+                            info.el.style.backgroundColor = bgColor;
+                            info.el.style.borderColor = bgColor;
+                            info.el.style.color = '#ffffff';
+                        },
+                        eventContent: function (arg) {
+                            var status = arg.event.extendedProps.status;
+                            var department = arg.event.extendedProps.departmentName;
+                            return {
+                                html: '<div style="padding:2px; font-size:11px;">' +
+                                    '<strong>' + arg.event.title + '</strong><br>' +
+                                    department + ' - ' + status +
+                                    '</div>'
+                            };
+                        }
+                    });
+
+                    calendar.render();
+                    console.log("Calendar initialized successfully");
+                } catch (e) {
+                    console.error("Error initializing calendar:", e);
+                    $("#calendar").html("<div class='alert alert-danger'>Error loading calendar: " + e.message + "</div>");
+                }
+            }
+
+            function loadDashboardData() {
+                console.log("Loading dashboard data...");
+                $.getJSON("/Admin/GetDashboardData")
+                    .done(function (response) {
+                        console.log("Response received:", response);
+
+                        if (response.error) {
+                            console.error("Server error:", response);
+                            $("#pendingRows").html("<tr><td colspan='5' class='text-center text-danger'>Error: " + response.error + "</td></tr>");
+                            return;
+                        }
+
+                        $("#totalAppointments").text(response.totalAppointments);
+                        $("#confirmedAppointments").text(response.confirmedAppointments);
+                        $("#pendingAppointments").text(response.pendingAppointments);
+                        $("#cancelledAppointments").text(response.cancelledAppointments);
+
+                        var date = new Date();
+                        $("#todayDateLabel").text(date.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }));
+
+                        renderRows("#pendingRows", response.pendingList || []);
+
+                        // Initialize Kendo Charts
+                        initCharts(
+                            response.totalAppointments,
+                            response.confirmedAppointments,
+                            response.pendingAppointments,
+                            response.cancelledAppointments
+                        );
+
+                        var today = new Date();
+                        today.setHours(0, 0, 0, 0);
+
+                        var calendarEvents = (response.todaySchedule || []).map(function (item) {
+                            var timeParts = item.appointmentTime.split(':');
+                            var startTime = new Date(today);
+                            startTime.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0, 0);
+                            var endTime = new Date(startTime);
+                            endTime.setMinutes(endTime.getMinutes() + 30);
+
+                            return {
+                                id: item.appointmentId,
+                                title: item.patientName,
+                                start: startTime,
+                                end: endTime,
+                                backgroundColor: getStatusColor(item.status),
+                                borderColor: getStatusColor(item.status),
+                                extendedProps: {
+                                    patientName: item.patientName,
+                                    departmentName: item.departmentName,
+                                    status: item.status
+                                }
+                            };
+                        });
+
+                        console.log("Calendar events:", calendarEvents);
+                        initCalendar(calendarEvents);
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        console.error("Failed to load dashboard data:", textStatus, errorThrown);
+                        console.error("Response:", jqXHR.responseText);
+                        $("#pendingRows").html("<tr><td colspan='5' class='text-center text-danger'>Failed to load data. Check console for details.</td></tr>");
+                    });
+            }
+
+            $(document).ready(function () {
+                // Check if Kendo is loaded
+                if (typeof kendo === "undefined") {
+                    console.error("Kendo UI is not loaded! Check CDN connection.");
+                    $("#distributionChart").html("<div class='alert alert-danger'>Kendo UI Chart library not loaded. Please check your internet connection.</div>");
+                    return;
+                }
+
+                console.log("Kendo UI version:", kendo.version);
+                console.log("Loading dashboard...");
+                loadDashboardData();
+            });
+    </script>
+}

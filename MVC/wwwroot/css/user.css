@@ -1,0 +1,107 @@
+/* --- Global Variables & Base Styles --- */
+:root {
+    --primary:         #0d9b87;
+    --primary-dark:    #0a7a6a;
+    --primary-light:   #e6f7f5;
+    --primary-xlight: #f0faf9;
+    --danger:          #e53e3e;
+    --danger-light:    #fff5f5;
+    --text-dark:       #1a2e2b;
+    --text-mid:        #4a6360;
+    --text-soft:       #8aa4a1;
+    --border:          #c8e6e2;
+    --bg:              #f5fafa;
+    --white:           #ffffff;
+    --shadow-md:       0 4px 18px rgba(13,155,135,.14);
+    --radius:          10px;
+    --radius-sm:       6px;
+}
+
+body { 
+    background: var(--bg); 
+    font-family: 'Segoe UI', sans-serif; 
+    color: var(--text-dark); 
+}
+
+/* --- Layout (Appbar) Styles --- */
+.k-appbar { background: #ffffff !important; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 8px 24px; }
+.logo-box { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 40px; height: 40px; background: var(--primary-dark); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.logo-text { font-size: 18px; font-weight: 700; color: #1a1a1a; }
+.nav-link { padding: 8px 16px; border-radius: 20px; text-decoration: none !important; color: #555 !important; font-weight: 500; font-size: 14px; transition: 0.2s; white-space: nowrap; }
+.nav-link:hover { background: #eef8f7; color: var(--primary-dark) !important; }
+.nav-link.active { background: #e0f4f1; color: var(--primary-dark) !important; font-weight: 600; }
+.username { font-weight: 600; font-size: 14px; color: #222; margin-right: 10px; white-space: nowrap; }
+.avatar-circle { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-dark), #c6a500); color: white; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0; }
+.profile-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; margin-right: 12px; }
+.logout-btn { border: 1.5px solid var(--primary-dark); color: var(--primary-dark); background: transparent; padding: 7px 18px; border-radius: 20px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; }
+.logout-btn:hover { background: var(--primary-dark); color: white; }
+
+/* --- Dashboard Styles --- */
+.hero { background: linear-gradient(135deg, #0a7a6a, #30b3a3); color: white; padding: 30px; border-radius: 16px; margin-bottom: 25px; }
+.stat-card { display: flex; align-items: center; gap: 15px; }
+.stat-icon { font-size: 28px; background: #eef8f7; padding: 14px; border-radius: 12px; }
+.stat-number { font-size: 26px; font-weight: 700; }
+.section-card { background: white; border-radius: 16px; padding: 20px; border: 1px solid #e3e3e3; }
+
+/* --- Book Appointment Styles --- */
+.dept-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+.dept-card { flex: 1; min-width: 130px; text-align: center; padding: 20px; border-radius: 12px; border: 2px solid #c9e2df; background: white; cursor: pointer; transition: 0.2s; }
+.dept-card:hover, .dept-card.selected { border-color: var(--primary-dark); background: #eef8f7; }
+.dept-icon { font-size: 30px; margin-bottom: 8px; }
+.step-card { background: #f7fbfb; border: 1px solid #d0e8e5; border-radius: 14px; padding: 20px; margin-bottom: 20px; }
+
+/* --- My Appointments & Grid Styles --- */
+.appt-page-header { display: flex; align-items: center; gap: 12px; margin: 28px 0 20px; }
+.appt-page-header h2 { margin: 0; font-size: 1.6rem; font-weight: 700; color: var(--primary-dark); }
+.appt-badge { background: var(--primary-light); color: var(--primary-dark); border: 1px solid var(--border); border-radius: 20px; padding: 2px 12px; font-size: .78rem; font-weight: 600; }
+#appointmentGrid .k-grid { border: 1.5px solid var(--border) !important; border-radius: var(--radius) !important; overflow: hidden !important; box-shadow: var(--shadow-md); }
+#appointmentGrid .k-grid-header { background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%) !important; }
+#appointmentGrid .k-grid-header th { color: #ffffff !important; font-weight: 600; text-transform: uppercase; padding: 13px 14px !important; }
+/* --- Toolbar & Filter Styling --- */
+.appt-toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; /* Keeps button and input aligned */}
+
+.appt-toolbar input,
+.appt-toolbar select { border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 8px 14px; font-size: .875rem; color: var(--text-dark); background: var(--white); outline: none; transition: border-color .2s, box-shadow .2s; }
+
+.appt-toolbar input { width: 240px; }
+
+.appt-toolbar input::placeholder { color: var(--text-soft); }
+
+.appt-toolbar input:focus,
+.appt-toolbar select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(13,155,135,.12); }
+/* --- Status Badges --- */
+.status-cell { display: flex; flex-direction: column; gap: 5px; }
+.status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 11px; border-radius: 20px; font-size: .76rem; font-weight: 600; }
+.status-badge .s-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.status-confirmed { background: #e6f4ea; color: #276235; border: 1px solid #b2dbb9; }
+.status-confirmed .s-dot { background: #276235; }
+.status-pending { background: #fff8e1; color: #7a5a00; border: 1px solid #ffe082; }
+.status-pending .s-dot { background: #d4a017; }
+.status-cancelled { background: #fdecea; color: #a82525; border: 1px solid #f5bebe; }
+.status-cancelled .s-dot { background: #a82525; }
+
+/* --- Kendo Scheduler Theme Overrides --- */
+
+/* Header & Today/View Buttons */
+.k-scheduler-toolbar .k-button.k-state-selected,
+.k-scheduler-navigation .k-button.k-state-selected,
+.k-scheduler-views .k-button.k-state-selected { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; color: white !important; }
+
+/* Change the "Today" and navigation hover states */
+.k-scheduler-toolbar .k-button:hover { background-color: var(--primary-light) !important; color: var(--primary-dark) !important; }
+
+/* Event Styling (Fixing the red blocks) */
+.k-event { border-radius: 6px !important; border: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; background: none !important; }
+
+/* Override the default orange selection in the calendar grid */
+.k-scheduler-pane .k-state-selected { background-color: rgba(13, 155, 135, 0.1) !important; }
+
+/* Current Time Marker (The line showing current time) */
+.k-scheduler-now-arrow, .k-scheduler-now-line { background-color: var(--primary) !important; }
+
+/* --- Reusable Components --- */
+.btn-reschedule, .k-button.k-primary { background: var(--primary) !important; color: #fff !important; border: none !important; border-radius: var(--radius-sm); padding: 5px 13px; font-size: .8rem; font-weight: 600; cursor: pointer; }
+.btn-cancel { background: var(--white) !important; color: var(--danger) !important; border: 1.5px solid var(--danger); border-radius: var(--radius-sm); padding: 5px 13px; font-size: .8rem; font-weight: 600; cursor: pointer; }
+.slot-btn, .slotBtn { display: inline-block; margin: 4px; padding: 6px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--white); cursor: pointer; font-size: .82rem; transition: background .15s; }
+.slot-btn.selected, .slotBtn.k-primary { background: var(--primary-dark) !important; color: #fff !important; border-color: var(--primary-dark) !important; }

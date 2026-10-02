@@ -1,0 +1,328 @@
+/* ===============================
+   GLOBAL ADMIN LAYOUT
+================================ */
+
+.admin-body {
+    background: #f4f6f9;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ===============================
+   HEADER
+================================ */
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* ===============================
+   LOGO
+================================ */
+
+.logo-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    font-size: 22px;
+}
+
+.logo-text {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+}
+
+
+/* ===============================
+   NAVIGATION
+================================ */
+
+.admin-nav {
+    display: flex;
+    gap: 18px;
+}
+
+.admin-nav__link {
+    text-decoration: none;
+    font-weight: 500;
+    color: #374151;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.admin-nav__link:hover {
+    background: #f3f4f6;
+}
+
+.admin-nav__link.is-active {
+    background: #3b82f6;
+    color: #fff;
+}
+
+
+/* ===============================
+   USER PROFILE
+================================ */
+
+.admin-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-user-profile__name {
+    font-weight: 500;
+    color: #111827;
+}
+
+.admin-user-profile__dp {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+
+/* ===============================
+   MAIN CONTAINER
+================================ */
+
+.admin-container {
+    padding: 28px;
+}
+
+
+/* ===============================
+   PAGE TITLE
+================================ */
+
+.page-title h1 {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.page-title p {
+    color: #6b7280;
+}
+
+
+/* ===============================
+   FILTER ROW
+================================ */
+
+.filter-row {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+
+/* ===============================
+   STATUS PILL
+================================ */
+
+.status-pill {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-confirmed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+
+/* ===============================
+   DASHBOARD
+================================ */
+
+.dashboard__hero {
+    margin-bottom: 20px;
+}
+
+.dashboard__hero h1 {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+
+/* ===============================
+   STATS CARDS
+================================ */
+
+.dashboard__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 16px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: white;
+    border-radius: 10px;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+}
+
+.stat-card h3 {
+    font-size: 22px;
+    margin: 0;
+}
+
+.stat-card p {
+    margin: 0;
+    color: #6b7280;
+}
+
+/* Colors */
+
+.stat-card--total {
+    border-left: 5px solid #3b82f6;
+}
+
+.stat-card--confirmed {
+    border-left: 5px solid #10b981;
+}
+
+.stat-card--pending {
+    border-left: 5px solid #f59e0b;
+}
+
+.stat-card--cancelled {
+    border-left: 5px solid #ef4444;
+}
+
+
+/* ===============================
+   CARD PANEL
+================================ */
+
+.card-panel {
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 18px;
+}
+
+.card-panel__header {
+    margin-bottom: 12px;
+}
+
+.card-panel__header h2 {
+    font-size: 18px;
+    margin: 0;
+}
+
+
+/* ===============================
+   DASHBOARD SPLIT LAYOUT
+================================ */
+
+.dashboard__split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 20px;
+}
+
+
+/* ===============================
+   TABLE
+================================ */
+
+.admin-table th {
+    font-weight: 600;
+    background: #f9fafb;
+}
+
+.admin-table td {
+    vertical-align: middle;
+}
+
+
+/* ===============================
+   KENDO GRID FIX
+================================ */
+
+.k-grid {
+    border-radius: 8px;
+}
+
+.k-grid-header {
+    background: #f9fafb;
+}
+
+.k-grid th {
+    font-weight: 600;
+}
+
+.k-grid-toolbar {
+    background: #fff;
+}
+
+
+/* ===============================
+   FULLCALENDAR
+================================ */
+
+.fc {
+    font-size: 13px;
+}
+
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 900px) {
+
+    .dashboard__split {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .admin-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

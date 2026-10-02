@@ -1,0 +1,573 @@
+@{
+    ViewData["Title"] = "My Appointment";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+@* <style>
+    :root {
+        --primary:         #0d9b87;
+        --primary-dark:    #0a7a6a;
+        --primary-light:   #e6f7f5;
+        --primary-xlight: #f0faf9;
+        --danger:          #e53e3e;
+        --danger-light:    #fff5f5;
+        --text-dark:       #1a2e2b;
+        --text-mid:        #4a6360;
+        --text-soft:       #8aa4a1;
+        --border:          #c8e6e2;
+        --bg:              #f5fafa;
+        --white:           #ffffff;
+        --shadow-md:       0 4px 18px rgba(13,155,135,.14);
+        --radius:          10px;
+        --radius-sm:       6px;
+    }
+
+    body { background: var(--bg); font-family: 'Segoe UI', sans-serif; color: var(--text-dark); }
+
+    .appt-page-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 28px 0 20px;
+    }
+    .appt-page-header h2 {
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+    }
+    .appt-badge {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2px 12px;
+        font-size: .78rem;
+        font-weight: 600;
+    }
+
+    #appointmentGrid .k-grid {
+        border: 1.5px solid var(--border) !important;
+        border-radius: var(--radius) !important;
+        overflow: hidden !important;
+        box-shadow: var(--shadow-md);
+    }
+    #appointmentGrid .k-grid-header {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%) !important;
+    }
+    #appointmentGrid .k-grid-header th {
+        color: #ffffff !important;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 13px 14px !important;
+    }
+
+    .status-cell { display: flex; flex-direction: column; gap: 5px; }
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 11px;
+        border-radius: 20px;
+        font-size: .76rem;
+        font-weight: 600;
+    }
+    .status-badge .s-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+    .status-confirmed  { background: #e6f4ea; color: #276235; border: 1px solid #b2dbb9; }
+    .status-confirmed  .s-dot { background: #276235; }
+    .status-pending    { background: #fff8e1; color: #7a5a00; border: 1px solid #ffe082; }
+    .status-pending    .s-dot { background: #d4a017; }
+    .status-cancelled  { background: #fdecea; color: #a82525; border: 1px solid #f5bebe; }
+    .status-cancelled  .s-dot { background: #a82525; }
+
+    .status-desc {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .72rem;
+        padding: 5px 10px;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+    .status-desc::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -60%;
+        width: 40%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+        animation: shimmer 3.5s infinite;
+    }
+
+    .appt-toolbar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+    }
+    .appt-toolbar input,
+    .appt-toolbar select {
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 8px 14px;
+        font-size: .875rem;
+        color: var(--text-dark);
+        background: var(--white);
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+    }
+    .appt-toolbar input { width: 240px; }
+    .appt-toolbar input::placeholder { color: var(--text-soft); }
+    .appt-toolbar input:focus,
+    .appt-toolbar select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(13,155,135,.12);
+    }
+
+    .desc-confirmed { background: linear-gradient(105deg, #d4f5e2 0%, #e8faf0 100%); color: #1a5c30; border: 1px solid #a8ddb8; }
+    .desc-pending   { background: linear-gradient(105deg, #ffeaa0 0%, #fff6cc 100%); color: #6b4a00; border: 1px solid #f0c940; }
+    .desc-cancelled { background: linear-gradient(105deg, #fde0de 0%, #fff0ef 100%); color: #922020; border: 1px solid #f0b0aa; }
+
+    .btn-reschedule {
+        background: var(--primary) !important;
+        color: #fff !important;
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 5px 13px;
+        font-size: .8rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+    .btn-cancel {
+        background: var(--white) !important;
+        color: var(--danger) !important;
+        border: 1.5px solid var(--danger);
+        border-radius: var(--radius-sm);
+        padding: 5px 13px;
+        font-size: .8rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .slot-btn {
+        display: inline-block;
+        margin: 4px;
+        padding: 6px 14px;
+        border-radius: var(--radius-sm);
+        border: 1.5px solid var(--border);
+        background: var(--white);
+        cursor: pointer;
+        font-size: .82rem;
+        transition: background .15s, color .15s;
+    }
+    .slot-btn.selected {
+        background: var(--primary-dark) !important;
+        color: #fff !important;
+        border-color: var(--primary-dark) !important;
+    }
+    .slot-btn:disabled {
+        opacity: .38;
+        text-decoration: line-through;
+        cursor: not-allowed;
+        background: #f0f0f0 !important;
+    }
+</style> *@
+
+<div class="appt-page-header">
+    <h2>My Appointments</h2>
+    <span class="appt-badge" id="apptCount">0 appointments</span>
+</div>
+
+<div class="appt-toolbar">
+    <input id="searchBox" placeholder="🔍  Search appointments..." />
+    <select id="statusFilter">
+        <option value="">All Status</option>
+        <option value="Confirmed">Confirmed</option>
+        <option value="Pending">Pending</option>
+        <option value="Cancelled">Cancelled</option>
+    </select>
+    <button id="openSchedulerBtn" class="btn-reschedule">
+        📅 Calendar View
+    </button>
+</div>
+
+<div id="appointmentGrid"></div>
+
+<div id="schedulerWindow" style="display:none">
+    <div id="appointmentScheduler"></div>
+</div>
+
+<div id="notification"></div>
+
+<div id="rescheduleWindow" style="display:none">
+    <div style="margin-bottom:16px">
+        <label style="display:block; font-weight:600; margin-bottom:5px;">New Date</label>
+        <input id="newDate" style="width:100%" />
+    </div>
+    <div style="margin-bottom:16px">
+        <label style="display:block; font-weight:600; margin-bottom:5px;">Select Time Slot</label>
+        <div id="slotContainer">
+            <em style="color:var(--text-soft)">Select a date first.</em>
+        </div>
+        <input type="hidden" id="selectedSlot" />
+    </div>
+    <div style="display:flex; gap:10px; justify-content:flex-end">
+        <button class="btn-cancel" style="border:1px solid #ccc; color:#666 !important;" onclick="closeReschedule()">Cancel</button>
+        <button class="btn-reschedule" onclick="confirmReschedule()">Confirm Reschedule</button>
+    </div>
+</div>
+
+<div id="cancelWindow" style="display:none">
+    <p id="cancelText" style="margin-bottom:18px; color:var(--text-mid);"></p>
+    <div style="display:flex; gap:10px; justify-content:flex-end">
+        <button class="btn-reschedule" style="background:#6c757d !important" onclick="closeCancel()">Keep it</button>
+        <button class="btn-cancel" onclick="confirmCancel()">Yes, Cancel</button>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    var selectedId    = 0;
+    var currentDeptId = 0;
+
+    // ── 12-hour slots matching backend "hh:mm tt" format ──
+    var ALL_SLOTS = [
+        "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM",
+        "11:00 AM", "11:30 AM", "01:00 PM", "01:30 PM",
+        "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM",
+        "04:00 PM", "04:30 PM", "05:00 PM"
+    ];
+
+    // Normalize any time format → "hh:mm AM/PM" uppercase to match backend
+    function normalizeSlot(s) {
+        if (!s) return "";
+        s = s.trim();
+
+        // Already in 12-hour format e.g. "09:00 AM" or "09:00 am"
+        if (/am|pm/i.test(s)) {
+            return s.toUpperCase();
+        }
+
+        // Convert 24-hour "HH:mm" or "HH:mm:ss" → "hh:mm AM/PM"
+        var parts  = s.split(":");
+        var hour   = parseInt(parts[0], 10);
+        var minute = parts[1] ? parts[1].substring(0, 2) : "00";
+        var ampm   = hour >= 12 ? "PM" : "AM";
+        var hour12 = hour % 12;
+        if (hour12 === 0) hour12 = 12;
+        return (hour12 < 10 ? "0" : "") + hour12 + ":" + minute + " " + ampm;
+    }
+
+    function statusBadge(d) {
+        var status = d.c_status || "";
+        var cls    = "status-" + status.toLowerCase();
+        var badge  = "<span class='status-badge " + cls + "'><span class='s-dot'></span>" + status + "</span>";
+        var desc   = "";
+
+        if (status === "Confirmed")      desc = "<div class='status-desc desc-confirmed'>✅ Appointment confirmed!</div>";
+        else if (status === "Pending")   desc = "<div class='status-desc desc-pending'>⏳ Awaiting for doctor</div>";
+        else if (status === "Cancelled") desc = "<div class='status-desc desc-cancelled'>🚫 Cancelled</div>";
+
+        return "<div class='status-cell'>" + badge + desc + "</div>";
+    }
+
+    // ── Kendo Grid ──
+    $("#appointmentGrid").kendoGrid({
+        dataSource: {
+            transport: {
+                read: {
+                    url: "/User/GetRecentAppointments",
+                    dataType: "json",
+                    cache: false
+                }
+            },
+            pageSize: 5,
+            schema: {
+                parse: function (response) {
+                    return $.map(response, function (item) {
+                        return {
+                            c_appointmentId:  item.id,
+                            c_departmentName: item.department,
+                            c_date:           new Date(item.date),
+                            c_time:           normalizeSlot(item.time),  // always "09:00 AM"
+                            c_status:         item.status,
+                            c_departmentId:   item.departmentId
+                        };
+                    });
+                },
+                model: {
+                    id: "c_appointmentId",
+                    fields: {
+                        c_appointmentId:  { type: "number" },
+                        c_departmentName: { type: "string" },
+                        c_date:           { type: "date"   },
+                        c_time:           { type: "string" },
+                        c_status:         { type: "string" },
+                        c_departmentId:   { type: "number" }
+                    }
+                }
+            }
+        },
+        pageable: true,
+        sortable:  true,
+        columns: [
+            { field: "c_appointmentId",  title: "APPT ID",  width: 100 },
+            { field: "c_departmentName", title: "Department"            },
+            { field: "c_date",           title: "Date", format: "{0:dd MMM yyyy}" },
+            { field: "c_time",           title: "Time"                  },
+            {
+                field: "c_status",
+                title: "Status",
+                template: function (d) { return statusBadge(d); }
+            },
+            {
+                title: "Actions",
+                template: function (d) {
+                    if (d.c_status === "Cancelled") return "";
+                    return "<button class='btn-reschedule' "
+                        + "data-id='"   + d.c_appointmentId + "' "
+                        + "data-dept='" + d.c_departmentId  + "' "
+                        + "data-date='" + kendo.toString(d.c_date, "yyyy-MM-dd") + "' "
+                        + "data-time='" + d.c_time + "' "   // "09:30 AM" — safe in data attribute
+                        + "onclick='openReschedule(this)'>Reschedule</button>"
+                        + "<button class='btn-cancel' onclick='openCancel(" + d.c_appointmentId + ")'>Cancel</button>";
+                }
+            }
+        ],
+        dataBound: function () {
+            var total = this.dataSource.total();
+            $("#apptCount").text(total + " appointment" + (total !== 1 ? "s" : ""));
+        }
+    });
+
+    // ── Scheduler Window ──
+    $("#schedulerWindow").kendoWindow({
+        width: "900px", height: "650px",
+        visible: false, modal: true,
+        title: "Appointment Calendar"
+    });
+
+    $("#openSchedulerBtn").click(function () {
+        $("#schedulerWindow").data("kendoWindow").center().open();
+    });
+
+    $("#appointmentScheduler").kendoScheduler({
+        date: new Date(),
+        height: 550,
+        views: [
+            { type: "day",  majorTick: 30 },
+            { type: "week", majorTick: 30 },
+            "month",
+            "agenda"
+        ],
+        startTime: new Date("2024/01/01 09:00 AM"),
+        endTime:   new Date("2024/01/01 05:00 PM"),
+        editable:  false,
+        dataSource: {
+            transport: {
+                read: { url: "/User/GetRecentAppointments", dataType: "json" }
+            },
+            schema: {
+                parse: function (response) {
+                    return $.map(response, function (item) {
+                        var startDate = new Date(item.date);
+                        // Parse "09:00 AM" for scheduler
+                        var normalized = normalizeSlot(item.time);
+                        var timeParts  = normalized.split(" ");
+                        var hm         = timeParts[0].split(":");
+                        var hour       = parseInt(hm[0], 10);
+                        var minute     = parseInt(hm[1], 10);
+                        if (timeParts[1] === "PM" && hour !== 12) hour += 12;
+                        if (timeParts[1] === "AM" && hour === 12) hour = 0;
+                        startDate.setHours(hour, minute, 0);
+                        var endDate = new Date(startDate);
+                        endDate.setMinutes(endDate.getMinutes() + 30);
+                        return {
+                            id:     item.id,
+                            title:  item.department + " Appointment",
+                            start:  startDate,
+                            end:    endDate,
+                            status: item.status
+                        };
+                    });
+                }
+            }
+        },
+        eventTemplate: function (e) {
+            if (e.status === "Confirmed")
+                return "<div style='background:#e6f4ea;color:#276235;padding:4px;border-radius:6px;'>✔ " + e.title + "</div>";
+            if (e.status === "Pending")
+                return "<div style='background:#fff8e1;color:#7a5a00;padding:4px;border-radius:6px;'>⏳ " + e.title + "</div>";
+            return "<div style='background:#fdecea;color:#a82525;padding:4px;border-radius:6px;'>✖ " + e.title + "</div>";
+        }
+    });
+
+    // ── Reschedule Window ──
+    $("#rescheduleWindow").kendoWindow({ width: "440px", visible: false, modal: true, title: "Reschedule" });
+
+    // bookedSlots  = ["09:00 AM", "09:30 AM", ...] from backend
+    // currentTime  = "09:30 AM" — this appointment's own slot (keep enabled)
+    //                pass "" when a new date is selected
+    function renderSlots(bookedSlots, currentTime) {
+        // Normalize all returned booked slots
+        var normalized = (bookedSlots || []).map(function (s) {
+            return normalizeSlot(s);
+        });
+
+        // Remove the current appointment's own slot so it stays selectable
+        if (currentTime) {
+            var idx = normalized.indexOf(currentTime);
+            if (idx !== -1) normalized.splice(idx, 1);
+        }
+
+        var container = $("#slotContainer").empty();
+
+        ALL_SLOTS.forEach(function (slot) {
+            var isBooked      = normalized.indexOf(slot) !== -1;
+            var isCurrentSlot = (slot === currentTime);
+
+            var btn = $("<button>").addClass("slot-btn").text(slot);
+
+            if (isBooked) {
+                btn.prop("disabled", true);
+                btn.attr("title", "Already booked");
+            }
+
+            if (isCurrentSlot) {
+                btn.addClass("selected");
+                $("#selectedSlot").val(slot);
+            }
+
+            btn.on("click", function () {
+                if ($(this).prop("disabled")) return;
+                $(".slot-btn").removeClass("selected");
+                $(this).addClass("selected");
+                $("#selectedSlot").val(slot);
+            });
+
+            container.append(btn);
+        });
+    }
+
+    // ── openReschedule now reads from data-* safely ──
+    function openReschedule(btn) {
+
+    selectedId    = parseInt($(btn).data("id"));
+    currentDeptId = parseInt($(btn).data("dept"));
+
+    var date        = $(btn).data("date");        // "2026-03-06"
+    var currentTime = normalizeSlot($(btn).data("time")); // "09:30 AM"
+
+    // Convert yyyy-MM-dd → dd-MM-yyyy (backend format)
+    var parts   = date.split("-");
+    var apiDate = parts[2] + "-" + parts[1] + "-" + parts[0];
+
+    @* console.log("openReschedule → id:", selectedId,
+                "dept:", currentDeptId,
+                "date:", apiDate,
+                "time:", currentTime); *@
+
+    var picker = $("#newDate").data("kendoDatePicker");
+
+    // Set date in picker
+    picker.value(new Date(date));
+
+    $("#selectedSlot").val(currentTime);
+
+    $("#slotContainer").html("<em style='color:var(--text-soft)'>Loading slots…</em>");
+
+    // Load booked slots
+    $.get("/User/GetBookedSlots",
+    {
+        departmentId: currentDeptId,
+        date: apiDate
+    },
+    function (bookedSlots) {
+
+        @* console.log("bookedSlots from server:", bookedSlots); *@
+
+        renderSlots(bookedSlots, currentTime);
+
+    });
+
+    $("#rescheduleWindow").data("kendoWindow").center().open();
+}
+
+    function closeReschedule() { $("#rescheduleWindow").data("kendoWindow").close(); }
+
+    function confirmReschedule() {
+        var date = kendo.toString($("#newDate").data("kendoDatePicker").value(), "yyyy-MM-dd");
+        var time = $("#selectedSlot").val(); // "09:30 AM"
+        if (!date || !time) { alert("Please select a date and time slot."); return; }
+
+        $.post("/User/Reschedule", { id: selectedId, date: date, time: time }, function () {
+            $("#appointmentGrid").data("kendoGrid").dataSource.read();
+            $("#notification").data("kendoNotification").show("Rescheduled Successfully", "success");
+            closeReschedule();
+        });
+    }
+
+    // ── Date Picker ──
+    $("#newDate").kendoDatePicker({
+        min: new Date(),
+        format: "dd-MM-yyyy",
+        change: function () {
+            var dateStr = kendo.toString(this.value(), "dd-MM-yyyy");
+            $("#selectedSlot").val("");
+            $("#slotContainer").html("<em style='color:var(--text-soft)'>Loading slots…</em>");
+
+            $.get("/User/GetBookedSlots", { departmentId: currentDeptId, date: dateStr }, function (bookedSlots) {
+                // New date — no current slot to protect, disable all booked
+                renderSlots(bookedSlots, "");
+            });
+        }
+    });
+
+    // ── Cancel Window ──
+    $("#cancelWindow").kendoWindow({ width: "360px", visible: false, modal: true, title: "Cancel Appointment" });
+
+    function openCancel(id) {
+        selectedId = id;
+        $("#cancelText").text("Are you sure you want to cancel this appointment? This action cannot be undone.");
+        $("#cancelWindow").data("kendoWindow").center().open();
+    }
+
+    function closeCancel() { $("#cancelWindow").data("kendoWindow").close(); }
+
+    function confirmCancel() {
+        $.post("/User/Cancel", { id: selectedId }, function (res) {
+            if (res.success) {
+                $("#appointmentGrid").data("kendoGrid").dataSource.read();
+                $("#notification").data("kendoNotification").show("Appointment Cancelled", "error");
+            }
+            closeCancel();
+        });
+    }
+
+    // ── Notification ──
+    $("#notification").kendoNotification({
+        position: { pinned: true, top: 30, right: 30 }
+    });
+
+    // ── Toolbar filters ──
+    $("#searchBox").on("keyup", function () {
+        var val = $(this).val();
+        $("#appointmentGrid").data("kendoGrid").dataSource.filter({
+            logic: "or",
+            filters: [
+                { field: "c_departmentName", operator: "contains", value: val },
+                { field: "c_status",         operator: "contains", value: val }
+            ]
+        });
+    });
+
+    $("#statusFilter").on("change", function () {
+        var val = $(this).val();
+        $("#appointmentGrid").data("kendoGrid").dataSource.filter(
+            val ? { field: "c_status", operator: "eq", value: val } : {}
+        );
+    });
+</script>
+}

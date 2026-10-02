@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MVC_User</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://kendo.cdn.telerik.com/2021.2.616/styles/kendo.default-v2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/user.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <style>
+            /* ── APPBAR WRAPPER ── */
+            .k-appbar {
+                background: #ffffff !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                padding: 8px 24px;
+            }
+
+            /* ── LOGO ── */
+            .logo-box {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                background: #0a7a6a;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+            }
+
+            .logo-text {
+                font-size: 18px;
+                font-weight: 700;
+                color: #1a1a1a;
+            }
+
+            /* ── NAV LINKS ── */
+            .nav-link {
+                padding: 8px 16px;
+                border-radius: 20px;
+                text-decoration: none !important;
+                color: #555 !important;
+                font-weight: 500;
+                font-size: 14px;
+                transition: 0.2s;
+                white-space: nowrap;
+            }
+
+            .nav-link:hover {
+                background: #eef8f7;
+                color: #0a7a6a !important;
+            }
+
+            .nav-link.active {
+                background: #e0f4f1;
+                color: #0a7a6a !important;
+                font-weight: 600;
+            }
+
+            /* ── USERNAME ── */
+            .username {
+                font-weight: 600;
+                font-size: 14px;
+                color: #222;
+                margin-right: 10px;
+                white-space: nowrap;
+            }
+
+            /* ── AVATAR CIRCLE ── */
+            .avatar-circle {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #0a7a6a, #c6a500);
+                color: white;
+                font-weight: 700;
+                font-size: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 12px;
+                flex-shrink: 0;
+            }
+
+            /* If using a real photo instead */
+            .profile-img {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-right: 12px;
+            }
+
+            /* ── SIGN OUT BUTTON ── */
+            .logout-btn {
+                border: 1.5px solid #0a7a6a;
+                color: #0a7a6a;
+                background: transparent;
+                padding: 7px 18px;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 14px;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+
+            .logout-btn:hover {
+                background: #0a7a6a;
+                color: white;
+            }
+
+            #appbar .k-appbar-section {
+                display: flex;
+                align-items: center;
+            }
+
+            #appbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .k-appbar-items {
+                display: flex !important;
+                align-items: center;
+            }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div id="appbar"></div>
+    </header>
+
+    <div class="container-fluid px-4 mt-4">
+        @RenderBody()
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2021.2.616/js/kendo.all.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+        var userName = "@Context.Session.GetString("Name")";
+        var userImage = "@Context.Session.GetString("Image")";
+
+        // Get initials for avatar fallback
+        var initials = userName.split(" ").map(function (n) { return n[0]; }).join("").toUpperCase();
+
+        // Avatar: show image if exists, else initials circle
+        var avatarHtml = userImage
+        ? "<a href='/Profile/Profile'><img src='/photos/" + userImage + "' class='profile-img' /></a>"
+        : "<a href='/Profile/Profile'><div class='avatar-circle'>" + initials + "</div></a>";
+
+        // Highlight active nav link based on current URL
+        var path = window.location.pathname.toLowerCase();
+
+        function navLink(href, icon, label) {
+        var isActive = path === href.toLowerCase() ? " active" : "";
+        return "<a class='nav-link" + isActive + "' href='" + href + "'>" + icon + " " + label + "</a>";
+        }
+
+        $("#appbar").kendoAppBar({
+        themeColor: "light",
+        items: [
+        {
+        type: "contentItem",
+        template: "<div class='logo-box'><div class='logo-icon'>🏥</div><span class='logo-text'>MediCare</span></div>"
+        },
+            
+        {
+        type: "contentItem",
+        template: `
+        <div style="display:flex; gap:10px">
+        ${navLink("/User/Dashboard", "🏠", "Dashboard")}
+        ${navLink("/User/BookAppointment", "📅", "Book Appointment")}
+        ${navLink("/User/MyAppointments", "📋", "My Appointments")}
+        </div>
+        `
+        },
+        { type: "spacer" },
+        {
+        type: "contentItem",
+        template: `
+        <div style="display:flex; align-items:center; gap:14px;">
+        <span class="username">${userName}</span>
+        ${avatarHtml}
+        <button class="logout-btn" onclick="signOut()">Sign Out</button>
+        </div>
+        `
+        }
+        ]
+        });
+
+        });
+
+        function signOut() {
+        window.location.href = '@Url.Action("Logout", "Auth")';
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>

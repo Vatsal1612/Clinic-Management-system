@@ -1,0 +1,259 @@
+@{
+    ViewData["title"]= "Login page";}
+<style>
+
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#0f766e,#065f46);
+    height:100vh;
+}
+
+
+.page-wrapper{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height:100vh;
+    padding:0 80px;
+}
+
+
+.login-container{
+    width:460px;
+    background:#ffffff;
+    padding:40px;
+    border-radius:28px;
+    box-shadow:0 25px 50px rgba(0,0,0,0.15);
+}
+
+.login-image{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    height:100%;
+}
+
+.login-image img{
+    max-height:85vh;
+    width:auto;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:25px;
+}
+
+.brand-icon{
+    width:50px;
+    height:50px;
+    background:#0f766e;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-size:22px;
+}
+
+.brand-text{
+    font-size:22px;
+    font-weight:700;
+    color:#0f766e;
+}
+
+.title{
+    font-size:32px;
+    font-weight:700;
+}
+
+.subtitle{
+    color:#666;
+    margin-bottom:30px;
+}
+
+
+.input-group{
+    position:relative;
+}
+
+.input-group i{
+    position:absolute;
+    left:12px;
+    top:12px;
+    color:#888;
+}
+
+.input-group input{
+    width:100%;
+    padding:12px 12px 12px 40px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    background:#f8f9fa;
+    font-size:15px;
+}
+
+.input-group input:focus{
+    outline:none;
+    border-color:#0f766e;
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(15,118,110,0.1);
+}
+
+.k-button{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    background:#0f766e;
+    color:white;
+    font-weight:600;
+    border:none;
+}
+
+.k-button:hover{
+    background:#0c5f58;
+}
+
+.links{
+    margin-top:20px;
+    text-align:center;
+}
+
+.links a{
+    color:#0f766e;
+    text-decoration:none;
+    font-weight:500;
+}
+
+</style>
+
+
+<div class="page-wrapper">
+    <div class="login-container">
+        <div class="brand">
+            <div class="brand-icon">🏥</div>
+            <div>
+                <div class="brand-text">MediCare</div>
+                <small>PATIENT PORTAL</small>
+            </div>
+        </div>
+
+        <div class="title">Welcome back</div>
+        <div class="subtitle">Sign in to manage your appointments</div>
+
+        <form asp-controller="Auth" asp-action="Login" method="post">
+            <div id="loginForm"></div>
+            <div class="links">
+                <p>Don't have an account? <a href="/Auth/Register">Create one</a></p>
+            </div>
+        </form>
+    </div>
+
+    <div class="login-image">
+        <img src="/image/image.png" alt="Doctor">
+    </div>
+
+</div>
+
+@section Scripts{
+<script>
+
+$(document).ready(function(){
+
+    var form = $("#loginForm").kendoForm({
+
+        formData:{
+            c_Email:"",
+            c_Password:""
+        },
+
+        orientation:"vertical",
+
+        items:[
+
+            {
+                field:"c_Email",
+                label:"Email Address",
+                editor:function(container,options){
+
+                    $('<div class="input-group">\
+                        <i class="k-icon k-i-email"></i>\
+                        <input type="text" name="'+options.field+'" class="k-textbox" placeholder="Enter you email address"/>\
+                    </div>').appendTo(container);
+
+                }
+            },
+
+            {
+                field:"c_Password",
+                label:"Password",
+                editor:function(container,options){
+
+                    $('<div class="input-group">\
+                        <i class="k-icon k-i-lock"></i>\
+                        <input type="password" name="'+options.field+'" class="k-textbox" placeholder="Enter your password"/>\
+                    </div>').appendTo(container);
+
+                }
+            }
+
+        ],
+
+        buttonsTemplate:'<button type="submit" id="loginBtn" class="k-button">Sign In →</button>'
+
+    }).data("kendoForm");
+
+    var validator = $("form").kendoValidator({
+        rules:{
+            emailRequired:function(input){
+                if(input.is("[name='c_Email']")){
+                    return input.val().trim() !== "";
+                }
+                return true;
+            },
+
+            emailFormat:function(input){
+                if(input.is("[name='c_Email']")){
+                var emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                    return emailPattern.test(input.val());
+                }
+                return true;
+            },
+
+            passwordRequired:function(input){
+                if(input.is("[name='c_Password']")){
+                    return input.val().trim() !== "";
+                }
+                return true;
+            },
+
+            passwordLength:function(input){
+                if(input.is("[name='c_Password']")){
+                    return input.val().length >= 6;
+                }
+                return true;
+            }
+        },
+
+        messages:{
+            emailRequired:"Email is required",
+            emailFormat:"Enter valid email address",
+            passwordRequired:"Password is required",
+            passwordLength:"Password must be at least 6 characters"
+        }
+    }).data("kendoValidator");
+
+    $("form").on("submit",function(e){
+        if(!validator.validate()){
+            e.preventDefault();
+        }
+    });
+
+});
+
+</script>
+
+}

@@ -1,0 +1,195 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+@* <style>
+    .hero {
+        background: linear-gradient(135deg, #0a7a6a, #30b3a3);
+        color: white;
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .stat-icon {
+        font-size: 28px;
+        background: #eef8f7;
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .stat-number {
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid #e3e3e3;
+    }
+
+    /* Theme Overrides for Kendo Buttons */
+    .k-button.k-primary {
+        background-color: #0a7a6a !important;
+        border-color: #0a7a6a !important;
+        color: white !important;
+    }
+
+    .k-button.k-primary:hover {
+        background-color: #086054 !important;
+        border-color: #086054 !important;
+    }
+</style> *@
+
+<div class="container mt-4">
+
+    <div class="hero">
+<h3>Good day, @Context.Session.GetString("Name") 👋</h3>
+        <p>Manage your health appointments easily at MediCare Clinic.</p>
+    </div>
+
+    <div id="statsLayout"></div>
+
+    <br />
+
+    <div class="section-card">
+        <h6 class="mb-3">Recent Appointments</h6>
+        
+        <div id="appointmentsGrid"></div>
+        
+        <br />
+        
+        <button id="viewAllBtn" class="k-button k-primary">
+            View All Appointments &rarr;
+        </button>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+             /* ----------------------------
+               KENDO GRID
+            -----------------------------*/
+            $("#appointmentsGrid").kendoGrid({
+                height: 350,
+                pageable: true,
+
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "/User/GetRecentAppointments",
+                            dataType: "json"
+                        }
+                    },
+                    pageSize: 5
+                },
+
+                dataBound: function(e){
+
+                    var data = this.dataSource.data();
+
+                    updateDashboardStats(data);
+
+                },
+
+                columns: [
+                    { field: "id", title: "ID", width: 80 },
+                    { field: "department", title: "Department" },
+                    { field: "date", title: "Date" },
+                    { field: "time", title: "Time" },
+                    {
+                        field: "status",
+                        title: "Status",
+                        template: function (data) {
+                            if (data.status == "Confirmed")
+                                return "<span style='color:green'>● Confirmed</span>";
+                            if (data.status == "Pending")
+                                return "<span style='color:#c58b00'>● Pending</span>";
+
+                            return "<span style='color:red'>● Cancelled</span>";
+                        }
+                    }
+                ]
+            });
+            function updateDashboardStats(data){
+
+                var total = data.length;
+
+                var confirmed = data.filter(x => x.status === "Confirmed").length;
+
+                var pending = data.filter(x => x.status === "Pending").length;
+
+                renderStats(total, confirmed, pending);
+
+            }
+            /* ----------------------------
+               TILE LAYOUT (STATS CARDS)
+            -----------------------------*/
+            // Fetch stats from the server, THEN build the tiles
+            function renderStats(total, confirmed, pending){
+
+                $("#statsLayout").kendoTileLayout({
+
+                    columns: 3,
+
+                    containers: [
+
+                    {
+                        colSpan: 1,
+                        bodyTemplate: `
+                        <div class="stat-card">
+                            <div class="stat-icon">📅</div>
+                            <div>
+                                <div class="stat-number">${total}</div>
+                                <div>Total Appointments</div>
+                            </div>
+                        </div>`
+                    },
+
+                    {
+                        colSpan: 1,
+                        bodyTemplate: `
+                        <div class="stat-card">
+                            <div class="stat-icon">✅</div>
+                            <div>
+                                <div class="stat-number">${confirmed}</div>
+                                <div>Confirmed</div>
+                            </div>
+                        </div>`
+                    },
+
+                    {
+                        colSpan: 1,
+                        bodyTemplate: `
+                        <div class="stat-card">
+                            <div class="stat-icon">⏳</div>
+                            <div>
+                                <div class="stat-number">${pending}</div>
+                                <div>Pending / Upcoming</div>
+                            </div>
+                        </div>`
+                    }
+
+                    ]
+
+                });
+
+            }
+
+           $("#viewAllBtn").click(function () {
+                window.location.href = "/User/MyAppointments";
+            });
+
+        });
+    </script>
+}
